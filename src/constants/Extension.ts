@@ -5,6 +5,9 @@ export const VSCMD_PREFIX = "famehandler";
 export const getCommandName = (command: string) => {
     return `${VSCMD_PREFIX}.${command}`;
 };
+export const getViewName = (view: string) => {
+    return `${VSCMD_PREFIX}.${view}`;
+};
 export const getSettingName = (setting: string) => {
     return `${setting}`;
 };
@@ -26,6 +29,10 @@ export const COMMAND_NAME = {
     statusBarUpdateCommand: getCommandName("statusBarUpdateCommand"),
     downloadAppVersionCommand: getCommandName("downloadAppVersionCommand"),
     testUserCommand:getCommandName("testUserCommand")
+};
+export const VIEWS = {
+    appsView: getViewName("appsView"),
+    detailsView: getViewName("detailsView")
 };
 export const SETTINGS = {
     key: VSCMD_PREFIX,

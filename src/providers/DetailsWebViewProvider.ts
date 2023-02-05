@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import { VSCMD_PREFIX,COMMAND_NAME } from '../constants';
+import { COMMAND_NAME, VIEWS } from '../constants';
 // based on https://github.com/microsoft/vscode-extension-samples/tree/main/webview-view-sample
 export class DetailsViewProvider implements vscode.WebviewViewProvider {
-    public static readonly viewType = `${VSCMD_PREFIX}.detailsView`;
+    public static readonly viewType = `${VIEWS.detailsView}`;
     private _view?: vscode.WebviewView;
 
 	constructor(

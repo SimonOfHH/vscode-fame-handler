@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { COMMAND_NAME } from '../constants';
+import { COMMAND_NAME, VIEWS } from '../constants';
 import { CommandProvider } from '../providers';
 import { FameAppCountrySubEntityEnvironmentsTreeItem, FameAppCountrySubEntityTreeItem, FameAppCountrySubEntityVersionsTreeItem, FameAppCountryTreeItem, FameAppEnvironmentTenantTreeItem, FameAppEnvironmentTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityCountriesTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppSubEntityTreeItem, FameAppTreeItem, FameAppVersionTreeItem, FameTreeItem, IFameApp, IFameAppCountry, IFameAppEnvironment } from '../types';
 import { ApiType, Utilities } from '../utils';
@@ -84,10 +84,10 @@ export class FameTreeProvider {
             showCollapseAll: true
         };
         // build
-        vscode.window.registerTreeDataProvider('fameapps', this); // TODO: Change to constant
+        vscode.window.registerTreeDataProvider(`${VIEWS.appsView}`, this);
         vscode.commands.registerCommand(`${COMMAND_NAME.refreshEntryCommand}`, () => { this.refresh(); });
         // create
-        const tree = vscode.window.createTreeView('fameapps', options); // TODO: Change to constant
+        const tree = vscode.window.createTreeView(`${VIEWS.appsView}`, options);
 
         // setup: events
         tree.onDidChangeSelection(e => { this.showDetailInformationForTreeItem(e.selection.at(0)); });

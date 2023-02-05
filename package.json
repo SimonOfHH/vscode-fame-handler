@@ -100,7 +100,7 @@
       "famehandler": [
         {
           "type": "tree",
-          "id": "fameapps",
+          "id": "famehandler.appsView",
           "name": "Apps"
         },
         {
@@ -112,7 +112,7 @@
     },
     "viewsWelcome": [
       {
-        "view": "fameapps",
+        "view": "famehandler.appsView",
         "contents": "You need to sign in, before anything can be shown here. Also make sure that settings are correctly configured.\n[Sign in](command:famehandler.signInCommand)"
       }
     ],
@@ -120,43 +120,43 @@
       "view/title": [
         {
           "command": "famehandler.refreshEntryCommand",
-          "when": "view == fameapps",
+          "when": "view == famehandler.appsView",
           "group": "navigation"
         },
         {
           "command": "famehandler.loadAllAppInfoCommand",
-          "when": "view == fameapps"
+          "when": "view == famehandler.appsView"
         }
       ],
       "view/item/context": [
         {
           "command": "famehandler.uploadAppVersionCommand",
-          "when": "view == fameapps && viewItem == countrySubEntityVersions",
+          "when": "view == famehandler.appsView && viewItem == countrySubEntityVersions",
           "group": "famehandler@0"
         },
         {
           "command": "famehandler.downloadAppVersionCommand",
-          "when": "view == fameapps && viewItem == countryVersion",
+          "when": "view == famehandler.appsView && viewItem == countryVersion",
           "group": "famehandler@1"
         },
         {
           "command": "famehandler.updateAppVersionCommand",
-          "when": "view == fameapps && viewItem == countryVersion",
+          "when": "view == famehandler.appsView && viewItem == countryVersion",
           "group": "famehandler@0"
         },
         {
           "command": "famehandler.addAppPrincipalCommand",
-          "when": "view == fameapps && viewItem == subentityPrincipal",
+          "when": "view == famehandler.appsView && viewItem == subentityPrincipal",
           "group": "famehandler@0"
         },
         {
           "command": "famehandler.updateAppPrincipalCommand",
-          "when": "view == fameapps && viewItem == principal",
+          "when": "view == famehandler.appsView && viewItem == principal",
           "group": "famehandler@0"
         },
         {
           "command": "famehandler.removeAppPrincipalCommand",
-          "when": "view == fameapps && viewItem == principal",
+          "when": "view == famehandler.appsView && viewItem == principal",
           "group": "famehandler@1"
         }
       ],

@@ -3,7 +3,7 @@ import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME } from '../constants';
 import { ApiProvider, CacheProvider, FameTreeProvider, PrincipalSelectProvider, ValueProvider } from '../providers';
 import { FameAppCountrySubEntityVersionsTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppVersionTreeItem } from '../types';
 import { IFameApp } from '../types/FameTypes';
-import { ApiType, getFileBytesAsBase64, ManifestHelper, NavxHelper, selectFileDialog, selectFolderDialog } from '../utils';
+import { ApiType, Utilities, ManifestHelper, NavxHelper } from '../utils';
 
 export class CommandProvider {
     public apiProvider: ApiProvider;
@@ -50,14 +50,14 @@ export class CommandProvider {
     };
     public uploadAppVersionCommand = async (context: vscode.ExtensionContext, version: FameAppCountrySubEntityVersionsTreeItem) => {
         if (await this.checkSignedIn() === false) { return; }
-        const file = await selectFileDialog();
+        const file = await Utilities.selectFileDialog();
         if (file) {
             const navx = await NavxHelper.async(file);
             if (navx.getAppValue("Id") !== version.appItem.id) {
                 vscode.window.showErrorMessage(`ID from selected app file and selected version do not match. Currently selected is ${version.appItem.id}, but the file contains ${navx.getAppValue("Id")}`);
                 return;
             }
-            const base64content = getFileBytesAsBase64(file);
+            const base64content = Utilities.getFileBytesAsBase64(file);
             let response = await this.apiProvider.addNewAppVersion(version.appItem.id, version.appCountry.countryCode, "Available", base64content);
             vscode.window.showInformationMessage(`Successfully uploaded file: ${file}`);
         }
@@ -86,7 +86,7 @@ export class CommandProvider {
     };
     public downloadAppVersionCommand = async (context: vscode.ExtensionContext, version: FameAppVersionTreeItem) => {
         if (await this.checkSignedIn() === false) { return; }
-        const targetDirectory = await selectFolderDialog('Select download folder');
+        const targetDirectory = await Utilities.selectFolderDialog('Select download folder');
         const filename = await this.apiProvider.downloadAppVersion(version.appVersionItem.appId, version.appVersionItem.countryCode, version.appVersionItem.version, targetDirectory, `${version.appItem.publisher}_${version.appItem.name}_${version.appVersionItem.version}`);
         vscode.window.showInformationMessage(`Downloaded to ${filename}`);
     };

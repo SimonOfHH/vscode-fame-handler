@@ -1,7 +1,7 @@
 // from: https://github.com/estruyf/vscode-msgraph-autocomplete/blob/main/src/providers/CacheProvider.ts
 import { ExtensionContext } from 'vscode';
 import { EXTENSION_ID, FILE_CACHE } from '../constants';
-import { unzipJsonFile } from '../utils';
+import { Utilities } from '../utils';
 
 interface CacheObject { [version: string]: { [path: string]: any } }
 
@@ -11,7 +11,7 @@ export class CacheProvider {
   private preCache: CacheObject | null = null;
   private cache: CacheObject = {};
 
-  private constructor (private context: ExtensionContext, name: string, defaultData: any) {
+  private constructor(private context: ExtensionContext, name: string, defaultData: any) {
     this.cacheName = `${EXTENSION_ID}_${name}`;
     this.cache = this.context.globalState.get<CacheObject>(this.cacheName, defaultData);
   }
@@ -39,7 +39,7 @@ export class CacheProvider {
   public async get(version: string, path: string) {
     try {
       if (!this.preCache) {
-        this.preCache = await unzipJsonFile(FILE_CACHE);
+        this.preCache = await Utilities.unzipJsonFile(FILE_CACHE);
       }
 
       if (this.preCache && this.preCache[version] && this.preCache[version][path]) {

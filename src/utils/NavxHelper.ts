@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { XMLParser } from 'fast-xml-parser';
-import { saveAsTempFile } from './Helper';
+import { Utilities } from '../utils';
 
 export class NavxHelper {
     private static navxFileIdentifier: Buffer = Buffer.from([78, 65, 86, 88, 40, 0, 0, 0, 2, 0]);
@@ -32,7 +32,7 @@ export class NavxHelper {
                     if (result[0] === false) {
                         throw Error(result[1]);
                     }
-                    const filenameZip = await saveAsTempFile(buf.slice(40), filename, true);
+                    const filenameZip = await Utilities.saveAsTempFile(buf.slice(40), filename, true);
                     navxFilename = await this.extractManifestFromArchive(filenameZip);
                 } else {
                     navxFilename = await this.extractManifestFromArchive(filename);

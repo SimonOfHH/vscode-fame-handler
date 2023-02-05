@@ -4,7 +4,7 @@ import { ExtensionContext } from 'vscode';
 import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME, D365_APPS_API, GRAPH_API_BASE } from '../constants';
 import { CacheProvider, CommandProvider, ValueProvider } from '../providers';
 import { IFameApp, IFameAppCountry, IFameAppEnvironment, IFameAppPrincipal, IFameAppVersion, IGraphUser, IPrincipal } from '../types';
-import { ApiProviderHelper, ApiType, AxiosHelper, saveAsTempFile } from "../utils";
+import { ApiProviderHelper, ApiType, AxiosHelper, Utilities } from "../utils";
 
 export class ApiProvider {
     private cache: CacheProvider;
@@ -199,7 +199,7 @@ export class ApiProvider {
             filename = `${appId}-${version}`;
         }
         const response = await AxiosHelper.appVersionsRequest.download(appId, countryCode, version);
-        const tempfile = await saveAsTempFile(response as Buffer, `${filename}.app`, false, targetFolder);
+        const tempfile = await Utilities.saveAsTempFile(response as Buffer, `${filename}.app`, false, targetFolder);
         console.log(tempfile);
         return tempfile;
     }

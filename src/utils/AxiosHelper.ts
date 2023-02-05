@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { SETTINGS } from "../constants";
 import { IFameApp, IFameAppArray, IFameAppCountry, IFameAppCountryArray, IFameAppEnvironment, IFameAppEnvironmentArray, IFameAppPrincipal, IFameAppPrincipalArray, IFameAppVersion, IFameAppVersionArray, IGraphUser, IGraphUserArray, IPrincipal } from '../types';
-import { getConfigurationValue } from "./Helper";
+import { Utilities } from "../utils";
 
 export class AxiosHelper {
     private static responseBody = <T>(response: AxiosResponse<T>) => response.data;
@@ -49,7 +49,7 @@ export class AxiosHelper {
     public static getPrincipalBody = (principal: IPrincipal, roles: string[]) => {
         if (principal.principalType.toLowerCase() === "user") {
             return {
-                "aadTenantId": getConfigurationValue(SETTINGS.d365ApiTenantId),
+                "aadTenantId": Utilities.getConfigurationValue(SETTINGS.d365ApiTenantId),
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 "Type": "User",
                 "roles": roles

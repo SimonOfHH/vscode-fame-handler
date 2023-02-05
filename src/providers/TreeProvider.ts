@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { COMMAND_NAME } from '../constants';
 import { CommandProvider } from '../providers';
 import { FameAppCountrySubEntityEnvironmentsTreeItem, FameAppCountrySubEntityTreeItem, FameAppCountrySubEntityVersionsTreeItem, FameAppCountryTreeItem, FameAppEnvironmentTenantTreeItem, FameAppEnvironmentTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityCountriesTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppSubEntityTreeItem, FameAppTreeItem, FameAppVersionTreeItem, FameTreeItem, IFameApp, IFameAppCountry, IFameAppEnvironment } from '../types';
-import { ApiType, configurationExists } from '../utils';
+import { ApiType, Utilities } from '../utils';
 
 export class FameTreeProvider {
     private _onDidChangeTreeData: vscode.EventEmitter<FameAppTreeItem | FameTreeItem | undefined | void> = new vscode.EventEmitter<FameAppTreeItem | FameTreeItem | undefined | void>();
@@ -19,7 +19,7 @@ export class FameTreeProvider {
         return element;
     }
     async getChildren(element?: vscode.TreeItem): Promise<vscode.TreeItem[] | undefined> {
-        if (configurationExists() === false) {
+        if (Utilities.configurationExists() === false) {
             return undefined;
         }
         if (this.cmdProvider.apiProvider) {

@@ -10,7 +10,7 @@ export class AxiosHelper {
         post: <T>(url: string, body: {}) =>
             //axios.post<T>(url, body).then(this.responseBody), // TODO: activate for next real test
             console.log(`POST url: ${url}; body: ${body}`),
-        post2: <T>(url: string, body: {}) =>
+        post2: <T>(url: string, body: {}) => // TODO: use "post()" after everything is tested and remove "post2()"
             axios.post<T>(url, body).then(this.responseBody),
         patch: <T>(url: string, body: {}) =>
             axios.patch<T>(url, body).then(this.responseBody),

@@ -1,7 +1,7 @@
-import { AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from "@azure/msal-node";
-import axios, { AxiosError } from "axios";
+import { PublicClientApplication } from "@azure/msal-node";
+import { AxiosError } from "axios";
 import { ExtensionContext } from 'vscode';
-import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME, D365_APPS_API, GRAPH_API_BASE } from '../constants';
+import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME } from '../constants';
 import { CacheProvider, CommandProvider, ValueProvider } from '../providers';
 import { IFameApp, IFameAppCountry, IFameAppEnvironment, IFameAppPrincipal, IFameAppVersion, IGraphUser, IPrincipal } from '../types';
 import { ApiProviderHelper, ApiType, AxiosHelper, Utilities } from "../utils";
@@ -17,12 +17,12 @@ export class ApiProvider {
         this.cmdProvider = cmdProvider;
     }
     public async signIn(type: ApiType) {
-        const authResult = await this.getAuthResult(true, type);
-        this.updateAuthenticationResultInCache(authResult, type);
+        const authResult = await ApiProviderHelper.getAuthResult(this.pca, this.cache, true, type);
+        ApiProviderHelper.updateAuthenticationResultInCache(this.cache, authResult, type);
         this.cmdProvider.currTreeProvider.refresh();
     }
     public async isSignedIn(type: ApiType): Promise<boolean> {
-        const authResult = await this.getTokenFromCache(false, type);
+        const authResult = await ApiProviderHelper.getTokenFromCache(this.cache, false, type);
         return authResult !== null;
     }
     private async getCachedValues<T>(value: T): Promise<T> {
@@ -46,7 +46,7 @@ export class ApiProvider {
         }
     }
     public async getUsers(userNameFilter?: string): Promise<IGraphUser[]> {
-        await this.configureAxiosInstance(ApiType.Graph);
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.Graph);
         let filter = "";
         if (userNameFilter) {
             filter = `$filter=startswith(displayName, '${userNameFilter}')`;
@@ -61,7 +61,7 @@ export class ApiProvider {
         return resultArray;
     }
     public async getUserDetails(userId: string): Promise<IGraphUser | undefined> {
-        await this.configureAxiosInstance(ApiType.Graph);
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.Graph);
         try {
             let result = await AxiosHelper.userRequest.details(userId);
             this.cachedPrincipalInformation.set(userId, result);
@@ -80,7 +80,7 @@ export class ApiProvider {
                 return cachedValues;
             }
         }
-        await this.configureAxiosInstance(ApiType.D365);
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
         let resultArray = await (await AxiosHelper.appsRequest.list()).value;
         console.log(resultArray);
         const namesMap = await ValueProvider.getMapFromCache(CACHE_IDNAMEMAP, this.cmdProvider);
@@ -91,13 +91,13 @@ export class ApiProvider {
         return resultArray;
     }
     public async getCountriesForApp(appId: string): Promise<IFameAppCountry[]> {
-        await this.configureAxiosInstance(ApiType.D365);
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
         let resultArray = await (await AxiosHelper.appCountriesRequest.list(appId)).value;
         console.log(resultArray);
         return resultArray;
     }
     public async getPrincipalsForApp(appId: string): Promise<IFameAppPrincipal[]> {
-        await this.configureAxiosInstance(ApiType.D365);
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
         let resultArray = await (await AxiosHelper.appPrincipalsRequest.list(appId)).value;
         // Add "name"-property to objects
         resultArray = await Promise.all(resultArray.map(async (entry): Promise<IFameAppPrincipal> => {
@@ -108,7 +108,7 @@ export class ApiProvider {
         return resultArray;
     }
     public async getVersionsForApp(appId: string, countryCode: string, updateCache: boolean, filter?: string): Promise<IFameAppVersion[]> {
-        await this.configureAxiosInstance(ApiType.D365);
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
         let resultArray = await (await AxiosHelper.appVersionsRequest.list(appId, countryCode)).value;
         console.log(resultArray);
         if (updateCache === true) {
@@ -117,7 +117,7 @@ export class ApiProvider {
         return resultArray;
     }
     public async getEnvironmentsForApp(appId: string, countryCode: string, updateCache: boolean, filter?: string): Promise<IFameAppEnvironment[]> {
-        await this.configureAxiosInstance(ApiType.D365);
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
         let resultArray: IFameAppEnvironment[] = [];
         if (filter) {
             resultArray = await (await AxiosHelper.appEnvironmentsRequest.listFiltered(appId, countryCode, filter)).value;
@@ -188,13 +188,13 @@ export class ApiProvider {
             initialAvailability: initialAvailability,
             packageContents: fileContentBase64
         };
-        await this.configureAxiosInstance(ApiType.D365);
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
         // TODO: Validate that this works
         let response = await AxiosHelper.appVersionsRequest.add(appId, countryCode, body);
         console.log(response);
     }
     public async downloadAppVersion(appId: string, countryCode: string, version: string, targetFolder?: string, filename?: string) {
-        await this.configureAxiosInstance(ApiType.D365);
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
         if (!filename) {
             filename = `${appId}-${version}`;
         }
@@ -204,74 +204,14 @@ export class ApiProvider {
         return tempfile;
     }
     public async addAppPrincipal(appId: string, principal: IPrincipal, roles: string[]) {
-        await this.configureAxiosInstance(ApiType.D365);
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
         const body = AxiosHelper.getPrincipalBody(principal, roles);
         let response = await AxiosHelper.appPrincipalsRequest.add(appId, principal.principalId, body);
         console.log(response);
     }
     public async removeAppPrincipal(appId: string, principalId: string) {
-        await this.configureAxiosInstance(ApiType.D365);
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
         let response = await AxiosHelper.appPrincipalsRequest.delete(appId, principalId);
         console.log(response);
     }
-    //#region Token-helper
-    private async getAuthResult(fromSignIn: boolean, type: ApiType): Promise<AuthenticationResult | null | undefined> {
-        const authResult = await this.getTokenFromCache(false, type);
-        if (authResult && fromSignIn === false) { return authResult; }
-        return await this.acquireToken(type);
-    }
-    // from msal-node sample (modified)
-    private async acquireToken(type: ApiType) {
-        const accounts = await this.pca.getTokenCache().getAllAccounts();
-        if (accounts.length === 1) {
-            return this.pca.acquireTokenSilent(ApiProviderHelper.getSilentRequest(accounts, type)).catch((e) => {
-                if (e instanceof InteractionRequiredAuthError) {
-                    return this.pca.acquireTokenInteractive(ApiProviderHelper.getLoginRequest(type));
-                }
-            });
-        } else if (accounts.length > 1) {
-            accounts.forEach((account: { username: any; }) => {
-                console.log(account.username);
-            });
-            return Promise.reject("Multiple accounts found. Please select an account to use.");
-        } else {
-            return this.pca.acquireTokenInteractive(ApiProviderHelper.getLoginRequest(type));
-        }
-    }
-    private async getTokenFromCache(throwError: boolean, type: ApiType): Promise<AuthenticationResult | null> {
-        let token = await this.cache.get("v1", ApiProviderHelper.getTokenIdentifier(type)) as AuthenticationResult;
-        if (!token && throwError) {
-            throw new Error("You need to sign in first.");
-        }
-        if (!ApiProviderHelper.authenticationResultIsValid(token)) {
-            this.updateAuthenticationResultInCache(null, type);
-            if (throwError) {
-                throw new Error("Session expired. You need to sign in.");
-            }
-            return null;
-        }
-        return token;
-    }
-    private updateAuthenticationResultInCache(authResult: AuthenticationResult | null | undefined, type: ApiType) {
-        this.cache.put("v1", ApiProviderHelper.getTokenIdentifier(type), authResult, authResult?.expiresOn as Date);
-    }
-    private async configureAxiosInstance(type: ApiType) {
-        let accessToken = await (await this.getTokenFromCache(true, type))?.accessToken;
-        let baseURL = D365_APPS_API;
-        if (type === ApiType.Graph) {
-            baseURL = GRAPH_API_BASE;
-        }
-        this.prepareAxiosValues(accessToken, baseURL);
-    }
-    private prepareAxiosValues(accessToken: string | undefined, baseUrl: string) {
-        axios.defaults.baseURL = baseUrl;
-        axios.interceptors.request.clear(); // clear, because we use 2 different endpoints and I can't figure out why the second is throwing errors
-        axios.interceptors.request.use((config) => {
-            if (accessToken) {
-                config.headers.Authorization = `Bearer ${accessToken}`;
-            }
-            return config;
-        });
-    }
-    //#endregion
 }

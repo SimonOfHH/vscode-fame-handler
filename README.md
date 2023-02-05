@@ -2,6 +2,11 @@
 
 This VS Code Extension provides some functionality to make working with App Management APIs for Microsofts Embed App program easier. It'S still a work-in-progress, so expect some placeholder etc. in the code.
 
+## Usage
+
+Just select the provided view "FAME Handler" and click "Sign in". It'll open up a new browser window and acquire a token for accessing the API.
+![Sign in sample](https://raw.githubusercontent.com/SimonOfHH/vscode-fame-handler/main/documentation/media/sign-in-load.gif)
+
 ## Features
 
 * UI for API results, to inspect

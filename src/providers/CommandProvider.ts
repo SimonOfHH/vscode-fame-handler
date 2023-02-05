@@ -111,12 +111,11 @@ export class CommandProvider {
     public removeAppPrincipalCommand = async (context: vscode.ExtensionContext, principalItem: FameAppPrincipalTreeItem) => {
         // DELETE https://apps.businesscentral.dynamics.com/v1.0/apps/{appId}/principals/{id}
         if (await this.checkSignedIn() === false) { return; }
-        const identifier = (principalItem.appPrincipal.name ? principalItem.appPrincipal.name : principalItem.appPrincipal.id);
-        vscode.window.showWarningMessage(`Are you sure that you want to remove principal "${identifier}" from app "${principalItem.appItem.name}?"`, "Yes", "No").
+        vscode.window.showWarningMessage(`Are you sure that you want to remove principal "${principalItem.getIdentifier()}" from app "${principalItem.appItem.name}?"`, "Yes", "No").
             then(async (answer) => {
                 if (answer === "Yes") {
                     await this.apiProvider.removeAppPrincipal(principalItem.appItem.id, principalItem.appPrincipal.id);
-                    vscode.window.showInformationMessage(`Removed principal "${identifier}" from app "${principalItem.appItem.name}"`);
+                    vscode.window.showInformationMessage(`Removed principal "${principalItem.getIdentifier()}" from app "${principalItem.appItem.name}"`);
                     this.currTreeProvider.refresh();
                 }
             });

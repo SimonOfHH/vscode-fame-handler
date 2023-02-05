@@ -22,14 +22,7 @@ export class FameAppTreeItem extends FameTreeItem {
         public readonly command?: vscode.Command,
     ) {
         super(label, collapsibleState, appItem);
-        if (appItem.name) {
-            this.label = appItem.name;
-            if (showPlaceholder() === true) {
-                this.label = "<App Name Placeholder>";
-            }
-        } else {
-            this.label = appItem.id;
-        }
+        this.label = this.getIdentifier();
         this.tooltip = appItem.storageLocation;
         this.description = appItem.publisher;
         if (showPlaceholder() === true) {
@@ -38,6 +31,13 @@ export class FameAppTreeItem extends FameTreeItem {
     }
     iconPath = new vscode.ThemeIcon('package');
     contextValue = 'fameapp';
+    public getIdentifier() {
+        if (showPlaceholder() === true) {
+            return "<App Name Placeholder>";
+        }
+        if (this.appItem.name) { return this.appItem.name; }
+        return this.appItem.id;
+    }
 }
 export class FameAppSubEntityTreeItem extends FameTreeItem {
     constructor(
@@ -134,23 +134,20 @@ export class FameAppPrincipalTreeItem extends FameTreeItem {
         public readonly description?: string
     ) {
         super(label, collapsibleState, appItem);
-        if (appPrincipal.name) {
-            this.label = appPrincipal.name;
-            if (showPlaceholder() === true) {
-                this.label = "<Princiapl Placeholder>";
-            }
-        } else {
-            this.label = `Enterprise Application: ${appPrincipal.id}`;
-            if (showPlaceholder() === true) {
-                this.label = `Enterprise Application: <Princiapl Placeholder>`;
-            }
-        }
+        this.label = this.getIdentifier();
         if (roles) {
             this.description = `Roles: ${roles.join(", ")}`;
         }
     }
     iconPath = new vscode.ThemeIcon('account');
     contextValue = 'principal';
+    public getIdentifier() {
+        if (showPlaceholder() === true) {
+            return "<Principal Placeholder>";
+        }
+        if (this.appPrincipal.name) { return this.appPrincipal.name; }
+        return this.appPrincipal.id;
+    }
 }
 export class FameAppVersionTreeItem extends FameTreeItem {
     constructor(

@@ -5,6 +5,7 @@ This VS Code Extension provides some functionality to make working with App Mana
 ## Usage
 
 Just select the provided view "FAME Handler" and click "Sign in". It'll open up a new browser window and acquire a token for accessing the API.
+
 ![Sign in sample](https://raw.githubusercontent.com/SimonOfHH/vscode-fame-handler/main/documentation/media/sign-in-load.gif)
 
 ## Features

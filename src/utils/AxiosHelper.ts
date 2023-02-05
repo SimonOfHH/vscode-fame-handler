@@ -49,7 +49,7 @@ export class AxiosHelper {
     public static getPrincipalBody = (principal: IPrincipal, roles: string[]) => {
         if (principal.principalType.toLowerCase() === "user") {
             return {
-                "aadTenantId": Utilities.getConfigurationValue(SETTINGS.d365ApiTenantId),
+                "aadTenantId": Utilities.getConfigurationValue(SETTINGS.d365ApiTenantId) as string,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 "Type": "User",
                 "roles": roles

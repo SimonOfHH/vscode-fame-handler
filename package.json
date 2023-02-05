@@ -236,6 +236,11 @@
               }
             }
           }
+        },
+        "famehandler.showPlaceholder": {
+          "type": "boolean",
+          "default": false,
+          "description": "Used for demos to avoid showing information not meant to be shown"
         }
       }
     }

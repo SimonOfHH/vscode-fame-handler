@@ -31,5 +31,6 @@ export const SETTINGS = {
     key: VSCMD_PREFIX,
     d365ApiClientId: getSettingName("api.clientId"),
     d365ApiTenantId: getSettingName("api.tenantId"),
-    principalSets: getSettingName("defaults.principalSets")
+    principalSets: getSettingName("defaults.principalSets"),
+    showPlaceholder:getSettingName("showPlaceholder")
 };

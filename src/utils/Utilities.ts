@@ -52,20 +52,20 @@ export class Utilities {
         return tempFile;
     };
     public static configurationExists(): Boolean {
-        if (!vscode.workspace.getConfiguration(SETTINGS.key).get(SETTINGS.d365ApiClientId)) {
+        if (!this.getConfigurationValue(SETTINGS.d365ApiClientId)) {
             vscode.window.showInformationMessage(`You need to setup configuration for ${SETTINGS.d365ApiClientId}`);
             return false;
         }
-        if (!vscode.workspace.getConfiguration(SETTINGS.key).get(SETTINGS.d365ApiTenantId)) {
+        if (!this.getConfigurationValue(SETTINGS.d365ApiTenantId)) {
             vscode.window.showInformationMessage(`You need to setup configuration for ${SETTINGS.d365ApiTenantId}`);
             return false;
         }
         return true;
     };
-    public static getConfigurationValue(identifier: string): string {
-        if (!vscode.workspace.getConfiguration(SETTINGS.key).get(identifier)) {
+    public static getConfigurationValue(identifier: string): any {
+        if (!vscode.workspace.getConfiguration(SETTINGS.key).has(identifier)) {
             throw Error(`Setting ${identifier} in configuration ${SETTINGS.key} does not exist`);
         }
-        return vscode.workspace.getConfiguration(SETTINGS.key).get(identifier) as string;
+        return vscode.workspace.getConfiguration(SETTINGS.key).get(identifier);
     };
 }

@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { IFameApp, IFameAppCountry, IFameAppEnvironment, IFameAppPrincipal, IFameAppVersion } from '../types';
+import { Utilities } from '../utils';
 
 export class FameTreeItem extends vscode.TreeItem {
     public appId: string = "";
@@ -23,11 +24,17 @@ export class FameAppTreeItem extends FameTreeItem {
         super(label, collapsibleState, appItem);
         if (appItem.name) {
             this.label = appItem.name;
+            if (showPlaceholder() === true) {
+                this.label = "<App Name Placeholder>";
+            }
         } else {
             this.label = appItem.id;
         }
         this.tooltip = appItem.storageLocation;
         this.description = appItem.publisher;
+        if (showPlaceholder() === true) {
+            this.description = "<Publisher Placeholder>";
+        }
     }
     iconPath = new vscode.ThemeIcon('package');
     contextValue = 'fameapp';
@@ -129,8 +136,14 @@ export class FameAppPrincipalTreeItem extends FameTreeItem {
         super(label, collapsibleState, appItem);
         if (appPrincipal.name) {
             this.label = appPrincipal.name;
+            if (showPlaceholder() === true) {
+                this.label = "<Princiapl Placeholder>";
+            }
         } else {
             this.label = `Enterprise Application: ${appPrincipal.id}`;
+            if (showPlaceholder() === true) {
+                this.label = `Enterprise Application: <Princiapl Placeholder>`;
+            }
         }
         if (roles) {
             this.description = `Roles: ${roles.join(", ")}`;
@@ -173,6 +186,9 @@ export class FameAppEnvironmentTenantTreeItem extends FameTreeItem {
         public readonly description?: string
     ) {
         super(label, collapsibleState, appItem);
+        if (showPlaceholder() === true) {
+            this.label = "Tenant: <TenantId Placeholder>";
+        }
     }
     iconPath = new vscode.ThemeIcon('cloud');
     contextValue = 'environmentTenant';
@@ -190,13 +206,15 @@ export class FameAppEnvironmentTreeItem extends FameTreeItem {
         public readonly description?: string
     ) {
         super(label, collapsibleState, appItem);
-        //this.label = this.formatVersionNumber(appVersionItem);
         this.description = appEnvironment.aadTenantId;
+        if (showPlaceholder() === true) {
+            this.description = "<TenantId Placeholder>";
+        }
     }
     iconPath = new vscode.ThemeIcon('database');
     contextValue = 'environment';
-
-    private formatVersionNumber(appVersion: IFameAppVersion) {
-        return `${appVersion.majorVersion}.${appVersion.minorVersion}.${appVersion.buildVersion}.${appVersion.revisionVersion}`;
-    }
 }
+// Used for public screenshots, to avoid publishing information not meant to be published
+export const showPlaceholder = () => {
+    return Utilities.getConfigurationValue("showPlaceholder") as boolean;
+};

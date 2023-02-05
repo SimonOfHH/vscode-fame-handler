@@ -1,0 +1,1 @@
+export const FILE_CACHE = '../cache.json.gz';

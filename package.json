@@ -1,0 +1,275 @@
+{
+  "name": "vscode-fame-handler",
+  "displayName": "FAME Handler",
+  "publisher": "SimonOfHH",
+  "description": "An  Extension to make working with the App Management APIs for Microsofts Embed App program easier and to give it an UI (LCS/FAME repository).",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "author": {
+    "name": "Simon Fischer",
+    "url": "https://github.com/SimonOfHH"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:famehandler"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "famehandler.signInCommand",
+        "title": "FAME: Sign In"
+      },
+      {
+        "command": "famehandler.clearCacheCommand",
+        "title": "FAME: Clear Cache"
+      },
+      {
+        "command": "famehandler.exportAppMapCommand",
+        "title": "FAME: Export App-ID-Name-Map"
+      },
+      {
+        "command": "famehandler.importAppMapCommand",
+        "title": "FAME: Import App-ID-Name-Map"
+      },
+      {
+        "command": "famehandler.validateManifestCommand",
+        "title": "FAME: Validate manifest.json"
+      },
+      {
+        "command": "famehandler.testUserCommand",
+        "title": "FAME: Test User Command"
+      },
+      {
+        "command": "famehandler.loadAllAppInfoCommand",
+        "title": "Load app metadata from chlid nodes"
+      },
+      {
+        "command": "famehandler.refreshEntryCommand",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "famehandler.uploadAppVersionCommand",
+        "title": "Upload App Version",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "famehandler.updateAppVersionCommand",
+        "title": "Update Version..."
+      },
+      {
+        "command": "famehandler.addAppPrincipalCommand",
+        "title": "Add Principal"
+      },
+      {
+        "command": "famehandler.updateAppPrincipalCommand",
+        "title": "Update Principal..."
+      },
+      {
+        "command": "famehandler.removeAppPrincipalCommand",
+        "title": "Remove Principal"
+      },
+      {
+        "command": "famehandler.setDataCommand",
+        "title": "Set Data"
+      },
+      {
+        "command": "famehandler.statusBarUpdateCommand",
+        "title": "Update Status Bar"
+      },
+      {
+        "command": "famehandler.downloadAppVersionCommand",
+        "title": "Download..."
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "famehandler",
+          "title": "FAME Handler",
+          "icon": "assets/lcs-favicon.ico"
+        }
+      ]
+    },
+    "views": {
+      "famehandler": [
+        {
+          "type": "tree",
+          "id": "fameapps",
+          "name": "Apps"
+        },
+        {
+          "type": "webview",
+          "id": "famehandler.detailsView",
+          "name": "API Response"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "fameapps",
+        "contents": "You need to sign in, before anything can be shown here. Also make sure that settings are correctly configured.\n[Sign in](command:famehandler.signInCommand)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "famehandler.refreshEntryCommand",
+          "when": "view == fameapps",
+          "group": "navigation"
+        },
+        {
+          "command": "famehandler.loadAllAppInfoCommand",
+          "when": "view == fameapps"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "famehandler.uploadAppVersionCommand",
+          "when": "view == fameapps && viewItem == countrySubEntityVersions",
+          "group": "famehandler@0"
+        },
+        {
+          "command": "famehandler.downloadAppVersionCommand",
+          "when": "view == fameapps && viewItem == countryVersion",
+          "group": "famehandler@1"
+        },
+        {
+          "command": "famehandler.updateAppVersionCommand",
+          "when": "view == fameapps && viewItem == countryVersion",
+          "group": "famehandler@0"
+        },
+        {
+          "command": "famehandler.addAppPrincipalCommand",
+          "when": "view == fameapps && viewItem == subentityPrincipal",
+          "group": "famehandler@0"
+        },
+        {
+          "command": "famehandler.updateAppPrincipalCommand",
+          "when": "view == fameapps && viewItem == principal",
+          "group": "famehandler@0"
+        },
+        {
+          "command": "famehandler.removeAppPrincipalCommand",
+          "when": "view == fameapps && viewItem == principal",
+          "group": "famehandler@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "famehandler.refreshEntryCommand",
+          "when": "false"
+        },
+        {
+          "command": "famehandler.loadAllAppInfoCommand",
+          "when": "false"
+        },
+        {
+          "command": "famehandler.uploadAppVersionCommand",
+          "when": "false"
+        },
+        {
+          "command": "famehandler.setDataCommand",
+          "when": "false"
+        },
+        {
+          "command": "famehandler.updateAppVersionCommand",
+          "when": "false"
+        },
+        {
+          "command": "famehandler.addAppPrincipalCommand",
+          "when": "false"
+        },
+        {
+          "command": "famehandler.updateAppPrincipalCommand",
+          "when": "false"
+        },
+        {
+          "command": "famehandler.removeAppPrincipalCommand",
+          "when": "false"
+        },
+        {
+          "command": "famehandler.statusBarUpdateCommand",
+          "when": "false"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "FAME Handler",
+      "properties": {
+        "famehandler.api.tenantId": {
+          "type": "string",
+          "default": "",
+          "description": "The tenantId of the AAD tenant you're working in."
+        },
+        "famehandler.api.clientId": {
+          "type": "string",
+          "default": "",
+          "description": "The clientId of the AAD App Registration for the API access."
+        },
+        "famehandler.defaults.principalSets": {
+          "type": "object",
+          "description": "",
+          "properties": {
+            "defaults": {
+              "type": "array",
+              "properties": {
+                "countryCode": {
+                  "type": "string"
+                },
+                "values": {
+                  "type": "array",
+                  "properties": {
+                    "principalType": {
+                      "type": "string"
+                    },
+                    "principalId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.0.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "@types/node-gzip": "^1.1.0",
+    "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "@vscode/test-electron": "^2.2.0",
+    "eslint": "^8.28.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.1.0",
+    "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "@azure/msal-common": "^9.1.1",
+    "@azure/msal-node": "^1.14.6",
+    "axios": "^1.2.3",
+    "fast-xml-parser": "^4.1.0",
+    "node-gzip": "^1.1.2",
+    "node-stream-zip": "^1.15.0",
+    "open": "^8.4.0",
+    "semver": "^7.3.8"
+  }
+}

@@ -1,22 +1,32 @@
-# vscode-fame-handler README
+# vscode-fame-handler
 
-Coming soon...
+This VS Code Extension provides some functionality to make working with App Management APIs for Microsofts Embed App program easier. It'S still a work-in-progress, so expect some placeholder etc. in the code.
 
 ## Features
 
-Coming soon...
+* UI for API results, to inspect
+  * Apps
+  * Versions
+  * Principals
+  * Environments
+* Validate manifest.json for new LCS releases
+* Provide new versions, update principals and more with an easy to use interface
+
+more tbd...
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+You need an Azure App registration with the following permissions:
+* Dynamics 365 Business Central -> Delegated permissions -> user_impersonation
+* Microsoft Graph -> Delegated permissions -> User.Read.All (used to provide a lookup from principals to display Usernames)
 
 ## Extension Settings
 
 This extension contributes the following settings:
 
-* `famehandler.api.clientId`: tbd
-* `famehandler.api.tenantId`: tbd
-* `famehandler.defaults.principalSets`: tbd
+* `famehandler.api.clientId`: The application (client) ID from the AAD App registration
+* `famehandler.api.tenantId`: Directory (tenant) ID
+* `famehandler.defaults.principalSets`: A set of preconfigured princiapls for easier assignments
 
 Sample configuration:
 ```

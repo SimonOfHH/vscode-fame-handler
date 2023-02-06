@@ -18,3 +18,15 @@ export interface IManifestAppEntry {
     publishOnly: boolean,
     blockUninstall: boolean
 }
+export interface IManifestLinks{
+    baseHelpUrl: string,
+    baseHelpSearchUrl: string,
+    communityUrl: string,
+    feedbackUrl: string,
+    legalUrl: string,
+    privacyUrl: string,
+    signInHelpUrl: string,
+    comingSoonUrl: string,
+    blogUrl: string,
+    contactSalesUrl: string
+}

@@ -10,10 +10,12 @@ export class NavxHelper {
     private static navxRuntimePackage: Buffer = Buffer.from([78, 65, 86, 88, 46, 78, 69, 65]);
     private _buffer: Buffer;
     private _asJson: any;
+    private _asXML: string;
 
     private constructor(input: Buffer) {
         // Handle as Buffer
         this._buffer = input;
+        this._asXML = input.toString();
         if (!this._buffer) {
             throw Error(`Invalid input`);
         }
@@ -45,6 +47,9 @@ export class NavxHelper {
         }
         return new NavxHelper(buf);
     }
+    public getAsXml() {
+        return this._asXML;
+    }
     private static async extractManifestFromArchive(filenameZip: string) {
         const streamZip = require("node-stream-zip");
         const navxFilename = path.join(os.tmpdir(), `'NavxManifest.xml'`);
@@ -68,16 +73,28 @@ export class NavxHelper {
             errMsg = `File "${filename}" does not seem to be a valid app file. (File-header mismatch)`;
             return [false, errMsg];
         }
-        const packageTypeBuf = buf.slice(36, 44);
-        if (packageTypeBuf.compare(NavxHelper.navxRegularPackage) !== 0) {
-            if (packageTypeBuf.compare(NavxHelper.navxRuntimePackage) === 0) {
-                errMsg = `File "${filename}" is a runtime app file. You can only use regular app files.`;
-                return [false, errMsg];
-            } else {
-                errMsg = `File "${filename}" does not seem to be a valid app file. Please contact developer (weird identifier).`;
-                return [false, errMsg];
-            }
+        if (this.isRegularPackage(buf)) {
+            return [true, ""];
         }
-        return [true, ""];
+        if (this.isRuntimePackage(buf)) {
+            errMsg = `File "${filename}" is a runtime app file. You can only use regular app files.`;
+            return [false, errMsg];
+        }
+        errMsg = `File "${filename}" does not seem to be a valid app file. Please contact developer (weird identifier).`;
+        return [false, errMsg];
+    }
+    private static isRegularPackage(buf: Buffer) {
+        let packageTypeBuf = buf.slice(36, 44);
+        if (packageTypeBuf.compare(NavxHelper.navxRegularPackage) === 0) {
+            return true;
+        }
+        return false;
+    }
+    private static isRuntimePackage(buf: Buffer) {
+        let packageTypeBuf = buf.slice(36, 44);
+        if (packageTypeBuf.compare(NavxHelper.navxRuntimePackage) === 0) {
+            return true;
+        }
+        return false;
     }
 }

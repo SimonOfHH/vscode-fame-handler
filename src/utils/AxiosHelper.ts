@@ -10,8 +10,8 @@ export class AxiosHelper {
         post: <T>(url: string, body: {}) =>
             //axios.post<T>(url, body).then(this.responseBody), // TODO: activate for next real test
             console.log(`POST url: ${url}; body: ${body}`),
-        post2: <T>(url: string, body: {}) => // TODO: use "post()" after everything is tested and remove "post2()"
-            axios.post<T>(url, body).then(this.responseBody),
+        postStreamResponse: <T>(url: string) =>
+            axios.post<T>(url, undefined, { responseType: "stream" }).then<T>(this.responseBody),
         patch: <T>(url: string, body: {}) =>
             axios.patch<T>(url, body).then(this.responseBody),
         delete: <T>(url: string) =>
@@ -39,7 +39,7 @@ export class AxiosHelper {
     public static appVersionsRequest = {
         list: (appId: string, countryCode: string, filter?: string) => this.request.get<IFameAppVersionArray>(`/${appId}/countries/${countryCode}/versions${(filter) ? `?filter=${filter}` : ""}`),
         add: (appId: string, countryCode: string, body: {}) => this.request.post<IFameAppVersion>(`/${appId}/countries/${countryCode}/versions`, body),
-        download: (appId: string, countryCode: string, version: string) => this.request.post2(`/${appId}/countries/${countryCode}/versions/${version}/getPackageContents `, {})
+        download: (appId: string, countryCode: string, version: string) => this.request.postStreamResponse(`/${appId}/countries/${countryCode}/versions/${version}/getPackageContents`)
     };
     public static appEnvironmentsRequest = {
         list: (appId: string, countryCode: string) => this.request.get<IFameAppEnvironmentArray>(`/${appId}/countries/${countryCode}/environments`),

@@ -21,6 +21,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.uploadAppVersionCommand}`, (version: FameAppCountrySubEntityVersionsTreeItem) => cmdProvider.uploadAppVersionCommand(context, version)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.updateVersionCommand}`, (version: FameAppVersionTreeItem) => cmdProvider.updateAppVersionCommand(context, version)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.downloadAppVersionCommand}`, (version: FameAppVersionTreeItem) => cmdProvider.downloadAppVersionCommand(context, version)));
+	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.inspectAppVersionNavxCommand}`, (version: FameAppVersionTreeItem) => cmdProvider.inspectAppVersionNavxCommand(context, version)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.addAppPrincipalCommand}`, (entityPrincipalItem: FameAppSubEntityPrincipalsTreeItem) => cmdProvider.addAppPrincipalCommand(context, entityPrincipalItem)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.updateAppPrincipalCommand}`, (entityPrincipalItem: FameAppPrincipalTreeItem) => cmdProvider.updateAppPrincipalCommand(context, entityPrincipalItem)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.removeAppPrincipalCommand}`, (entityPrincipalItem: FameAppPrincipalTreeItem) => cmdProvider.removeAppPrincipalCommand(context, entityPrincipalItem)));

@@ -28,6 +28,7 @@ export const COMMAND_NAME = {
     validateManifestCommand: getCommandName("validateManifestCommand"),
     statusBarUpdateCommand: getCommandName("statusBarUpdateCommand"),
     downloadAppVersionCommand: getCommandName("downloadAppVersionCommand"),
+    inspectAppVersionNavxCommand: getCommandName("inspectAppVersionNavxCommand"),
     testUserCommand:getCommandName("testUserCommand")
 };
 export const VIEWS = {

@@ -199,7 +199,7 @@ export class ApiProvider {
             filename = `${appId}-${version}`;
         }
         const response = await AxiosHelper.appVersionsRequest.download(appId, countryCode, version);
-        const tempfile = await Utilities.saveAsTempFile(response as Buffer, `${filename}.app`, false, targetFolder);
+        const tempfile = await Utilities.saveAsTempFileFromStream(response, `${filename}.app`, false, targetFolder);
         console.log(tempfile);
         return tempfile;
     }

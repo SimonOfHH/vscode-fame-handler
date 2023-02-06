@@ -90,6 +90,19 @@ export class CommandProvider {
         const filename = await this.apiProvider.downloadAppVersion(version.appVersionItem.appId, version.appVersionItem.countryCode, version.appVersionItem.version, targetDirectory, `${version.appItem.publisher}_${version.appItem.name}_${version.appVersionItem.version}`);
         vscode.window.showInformationMessage(`Downloaded to ${filename}`);
     };
+    public inspectAppVersionNavxCommand = async (context: vscode.ExtensionContext, version: FameAppVersionTreeItem) => {
+        if (await this.checkSignedIn() === false) { return; }
+        const filename = await this.apiProvider.downloadAppVersion(version.appVersionItem.appId, version.appVersionItem.countryCode, version.appVersionItem.version, undefined, `${version.appItem.publisher}_${version.appItem.name}_${version.appVersionItem.version}-1`);
+        
+        const navx = await NavxHelper.async(filename);        
+        const options: Object = {
+            content: navx.getAsXml(),
+            language:'xml'
+        };
+        vscode.workspace.openTextDocument(options).then(doc => {
+            vscode.window.showTextDocument(doc);
+        });
+    };
     public addAppPrincipalCommand = async (context: vscode.ExtensionContext, entityPrincipalItem: FameAppSubEntityPrincipalsTreeItem) => {
         // Endpoint is for add or update actually
         // PATCH https://apps.businesscentral.dynamics.com/v1.0/apps/{appId}/principals/{id}    

@@ -1,9 +1,9 @@
-import * as vscode from 'vscode';
 import * as fs from 'fs';
+import { ungzip } from 'node-gzip';
 import * as os from 'os';
 import * as path from 'path';
+import * as vscode from 'vscode';
 import { SETTINGS } from '../constants';
-import { ungzip } from 'node-gzip';
 
 export class Utilities {
     public static async unzipJsonFile(filePath: string) {
@@ -43,6 +43,33 @@ export class Utilities {
         var text = fs.readFileSync(filename, 'base64');
         return text;
     };
+    public static async saveAsTempFileFromStream(sourceStream: any, filename: string, withReplace: boolean, targetFolder?: string) {
+        if (withReplace === true) {
+            filename = filename.replace(".app", ".zip");
+        }
+        const tempFile = path.join(`${(targetFolder) ? targetFolder : os.tmpdir()}`, `${path.basename(filename)}`);
+        if (fs.existsSync(tempFile)) {
+            fs.rmSync(tempFile);
+        }
+        const writer = fs.createWriteStream(tempFile);
+        await new Promise((resolve, reject) => {
+            sourceStream.pipe(writer);
+            let error: Error = new Error;
+            writer.on('error', err => {
+                error = err;
+                writer.close();
+                reject(err);
+            });
+            writer.on('close', () => {
+                if (!error.message) {
+                    resolve(true);
+                }
+                //no need to call the reject here, as it will have been called in the
+                //'error' stream;
+            });
+        });
+        return tempFile;
+    }
     public static async saveAsTempFile(buf: Buffer, filename: string, withReplace: boolean, targetFolder?: string) {
         if (withReplace === true) {
             filename = filename.replace(".app", ".zip");

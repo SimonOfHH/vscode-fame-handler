@@ -163,6 +163,7 @@ export class FameAppVersionTreeItem extends FameTreeItem {
     ) {
         super(label, collapsibleState, appItem);
         this.label = this.formatVersionNumber(appVersionItem);
+        this.description = appVersionItem.availability;
     }
     iconPath = new vscode.ThemeIcon('symbol-field');
     contextValue = 'countryVersion';

@@ -13,7 +13,10 @@ export class AxiosHelper {
         postStreamResponse: <T>(url: string) =>
             axios.post<T>(url, undefined, { responseType: "stream" }).then<T>(this.responseBody),
         patch: <T>(url: string, body: {}) =>
-            axios.patch<T>(url, body).then(this.responseBody),
+            axios.patch<T>(url, body).then(this.responseBody), // TODO: activate for next real test
+        patchPlaceholder: <T>(url: string, body: {}) => {
+            console.log(`PATCH url: ${url}; body: ${body}`); return {} as IFameAppCountry;
+        },
         delete: <T>(url: string) =>
             axios.delete<T>(url).then(this.responseBody)
     };
@@ -28,7 +31,8 @@ export class AxiosHelper {
     };
     public static appCountriesRequest = {
         list: (appId: string) => this.request.get<IFameAppCountryArray>(`/${appId}/countries`),
-        details: (appId: string, id: string) => this.request.get<IFameAppCountry>(`/${appId}/countries/${id}`)
+        details: (appId: string, id: string) => this.request.get<IFameAppCountry>(`/${appId}/countries/${id}`),
+        add: (appId: string, id: string, body: {}) => this.request.patchPlaceholder<IFameAppCountry>(`/${appId}/countries/${id}`, body)
     };
     public static appPrincipalsRequest = {
         list: (appId: string) => this.request.get<IFameAppPrincipalArray>(`/${appId}/principals`),

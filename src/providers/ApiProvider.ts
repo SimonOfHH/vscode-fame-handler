@@ -96,6 +96,15 @@ export class ApiProvider {
         console.log(resultArray);
         return resultArray;
     }
+    public async addCountryForApp(appId: string, countryCode : string): Promise<IFameAppCountry> {
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
+        let body = {
+            countryCode: countryCode
+        };
+        let result = await AxiosHelper.appCountriesRequest.add(appId, countryCode, body);
+        console.log(result);
+        return result;
+    }
     public async getPrincipalsForApp(appId: string): Promise<IFameAppPrincipal[]> {
         await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
         let resultArray = await (await AxiosHelper.appPrincipalsRequest.list(appId)).value;

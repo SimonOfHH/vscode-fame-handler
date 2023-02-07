@@ -2,10 +2,14 @@
   "name": "vscode-fame-handler",
   "displayName": "FAME Handler",
   "publisher": "SimonOfHH",
-  "description": "An  Extension to make working with the App Management APIs for Microsofts Embed App program easier and to give it an UI (LCS/FAME repository).",
+  "description": "An Extension to make working with the App Management APIs for Microsofts Embed App program easier and to give it an UI (LCS/FAME repository).",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.74.0"
+  },
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/SimonOfHH/vscode-fame-handler"
   },
   "author": {
     "name": "Simon Fischer",
@@ -89,6 +93,10 @@
       {
         "command": "famehandler.inspectAppVersionNavxCommand",
         "title": "Inspect NAVX Manifest"
+      },
+      {
+        "command": "famehandler.assignAppToCountryCommand",
+        "title": "Assign to country..."
       }
     ],
     "viewsContainers": {
@@ -167,6 +175,11 @@
           "command": "famehandler.removeAppPrincipalCommand",
           "when": "view == famehandler.appsView && viewItem == principal",
           "group": "famehandler@1"
+        },
+        {
+          "command": "famehandler.assignAppToCountryCommand",
+          "when": "view == famehandler.appsView && viewItem == fameapp",
+          "group": "famehandler@0"
         }
       ],
       "commandPalette": [
@@ -205,6 +218,10 @@
         {
           "command": "famehandler.statusBarUpdateCommand",
           "when": "false"
+        },
+        {
+          "command": "famehandler.assignAppToCountryCommand",
+          "when": "false"
         }
       ]
     },
@@ -220,6 +237,16 @@
           "type": "string",
           "default": "",
           "description": "The clientId of the AAD App Registration for the API access."
+        },
+        "famehandler.defaults.countrySelection": {
+          "type": "array",
+          "default": [
+            "NL",
+            "DE",
+            "GB",
+            "IE",
+            "FR"
+          ]
         },
         "famehandler.defaults.principalSets": {
           "type": "object",

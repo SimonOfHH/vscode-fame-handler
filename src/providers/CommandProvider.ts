@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
-import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME } from '../constants';
+import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME, SETTINGS } from '../constants';
 import { ApiProvider, CacheProvider, FameTreeProvider, PrincipalSelectProvider, ValueProvider } from '../providers';
-import { FameAppCountrySubEntityVersionsTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppVersionTreeItem } from '../types';
+import { FameAppCountrySubEntityVersionsTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppTreeItem, FameAppVersionTreeItem } from '../types';
 import { IFameApp } from '../types/FameTypes';
-import { ApiType, Utilities, ManifestHelper, NavxHelper } from '../utils';
+import { ApiType, ManifestHelper, NavxHelper, Utilities } from '../utils';
 
 export class CommandProvider {
     public apiProvider: ApiProvider;
@@ -79,6 +79,29 @@ export class CommandProvider {
         const cache: CacheProvider = CacheProvider.getInstance(context, CACHE_NAME);
         cache.clear();
     };
+    public assignAppToCountryCommand = async (context: vscode.ExtensionContext, app: FameAppTreeItem) => {
+        // TODO: Validate 
+        // https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/appmanagement/app-management-api#add-or-update-country
+        const countries = Utilities.getConfigurationValue(SETTINGS.countrySelection) as string[];
+        if (!countries || countries.length === 0) {
+            vscode.window.showInformationMessage(`You need to provide a list of possible countries in the setting ${SETTINGS.countrySelection}.`);
+            return;
+        }
+        const countryCode = await vscode.window.showQuickPick(countries, {
+            placeHolder: '...',
+            title: 'Select country'
+        });
+        if (!countryCode) { return; }
+        // TODO: Should countryCode be validated? Maybe against list of assigned country codes? see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
+        vscode.window.showWarningMessage(`Are you sure that you want to assign app "${app.appItem.name} to country "${countryCode}"? This can't be undone."`, "Yes", "No").
+            then(async (answer) => {
+                if (answer === "Yes") {
+                    await this.apiProvider.addCountryForApp(app.appItem.id, countryCode);
+                    vscode.window.showInformationMessage(`Assigned country "${countryCode}" to app "${app.appItem.name}"`);
+                    this.currTreeProvider.refresh();
+                }
+            });
+    };
     public updateAppVersionCommand = async (context: vscode.ExtensionContext, version: FameAppVersionTreeItem) => {
         // TODO: Implement (availability, dependencies) 
         // https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/appmanagement/app-management-api#update-version
@@ -93,11 +116,11 @@ export class CommandProvider {
     public inspectAppVersionNavxCommand = async (context: vscode.ExtensionContext, version: FameAppVersionTreeItem) => {
         if (await this.checkSignedIn() === false) { return; }
         const filename = await this.apiProvider.downloadAppVersion(version.appVersionItem.appId, version.appVersionItem.countryCode, version.appVersionItem.version, undefined, `${version.appItem.publisher}_${version.appItem.name}_${version.appVersionItem.version}-1`);
-        
-        const navx = await NavxHelper.async(filename);        
+
+        const navx = await NavxHelper.async(filename);
         const options: Object = {
             content: navx.getAsXml(),
-            language:'xml'
+            language: 'xml'
         };
         vscode.workspace.openTextDocument(options).then(doc => {
             vscode.window.showTextDocument(doc);

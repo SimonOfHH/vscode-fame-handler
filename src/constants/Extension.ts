@@ -21,7 +21,8 @@ export const COMMAND_NAME = {
     uploadAppVersionCommand: getCommandName("uploadAppVersionCommand"),
     setDataCommand: getCommandName("setDataCommand"),
     getContextCommand: getCommandName("getContextCommand"),
-    updateVersionCommand: getCommandName("updateAppVersion"),
+    assignAppToCountryCommand: getCommandName("assignAppToCountryCommand"),
+    updateVersionCommand: getCommandName("updateAppVersionCommand"),
     addAppPrincipalCommand: getCommandName("addAppPrincipalCommand"),
     updateAppPrincipalCommand: getCommandName("updateAppPrincipalCommand"),
     removeAppPrincipalCommand: getCommandName("removeAppPrincipalCommand"),
@@ -29,7 +30,7 @@ export const COMMAND_NAME = {
     statusBarUpdateCommand: getCommandName("statusBarUpdateCommand"),
     downloadAppVersionCommand: getCommandName("downloadAppVersionCommand"),
     inspectAppVersionNavxCommand: getCommandName("inspectAppVersionNavxCommand"),
-    testUserCommand:getCommandName("testUserCommand")
+    testUserCommand: getCommandName("testUserCommand")
 };
 export const VIEWS = {
     appsView: getViewName("appsView"),
@@ -40,5 +41,6 @@ export const SETTINGS = {
     d365ApiClientId: getSettingName("api.clientId"),
     d365ApiTenantId: getSettingName("api.tenantId"),
     principalSets: getSettingName("defaults.principalSets"),
-    showPlaceholder:getSettingName("showPlaceholder")
+    showPlaceholder: getSettingName("showPlaceholder"),
+    countrySelection: getSettingName("defaults.countrySelection")
 };

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { COMMAND_NAME, EXTENSION_ID } from './constants';
 import { DetailsViewProvider, FameTreeProvider, CommandProvider } from './providers';
-import { FameAppCountrySubEntityVersionsTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppVersionTreeItem } from './types';
+import { FameAppCountrySubEntityVersionsTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppTreeItem, FameAppVersionTreeItem } from './types';
 
 let tokenInfoStatusBarItem: vscode.StatusBarItem;
 
@@ -18,6 +18,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.exportAppMapCommand}`, () => cmdProvider.exportAppIdNameMapCommand(context)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.importAppMapCommand}`, () => cmdProvider.importAppIdNameMapCommand(context)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.loadAllAppInfoCommand}`, () => cmdProvider.loadAllAppsCommand(context)));
+	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.assignAppToCountryCommand}`, (app: FameAppTreeItem) => cmdProvider.assignAppToCountryCommand(context, app)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.uploadAppVersionCommand}`, (version: FameAppCountrySubEntityVersionsTreeItem) => cmdProvider.uploadAppVersionCommand(context, version)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.updateVersionCommand}`, (version: FameAppVersionTreeItem) => cmdProvider.updateAppVersionCommand(context, version)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.downloadAppVersionCommand}`, (version: FameAppVersionTreeItem) => cmdProvider.downloadAppVersionCommand(context, version)));

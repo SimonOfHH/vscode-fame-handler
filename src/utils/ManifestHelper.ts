@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { count } from 'console';
 import * as semver from 'semver';
 import { table, TableUserConfig } from 'table';
 import { ApiProvider } from "../providers";
@@ -14,10 +15,10 @@ export class ManifestHelper {
         this._apiProvider = apiProvider;
         this._asJson = JSON.parse(this._rawContent);
     }
-    public async validate() {
+    public async validate(countryCode: string) {
         let result = new ManifestValidationResult();
         result.linkProblems = await this.getLinkProblems();
-        result.appProblems = await this.getAppProblems();
+        result.appProblems = await this.getAppProblems(countryCode);
         return result;
     }
     private async getLinkProblems(): Promise<Map<number, string[]> | undefined> {
@@ -32,11 +33,11 @@ export class ManifestHelper {
         }));
         return problemsMap;
     }
-    private async getAppProblems(): Promise<Map<number, string[]> | undefined> {
+    private async getAppProblems(countryCode: string): Promise<Map<number, string[]> | undefined> {
         let problemsMap: Map<number, string[]> = new Map<number, string[]>();
         const apps = this.getParsedApps();
         await Promise.all(apps.map(async (entry, index) => {
-            const appProblems = await ManifestHelper.validateAppEntry(index, entry, this._apiProvider);
+            const appProblems = await ManifestHelper.validateAppEntry(index, countryCode, entry, this._apiProvider);
             if (appProblems) {
                 problemsMap.set(index, appProblems);
             }
@@ -69,7 +70,7 @@ export class ManifestHelper {
         if (problems.length === 0) { return undefined; };
         return problems;
     }
-    private static async validateAppEntry(entryId: number, appEntry: IManifestAppEntry, apiProvider: ApiProvider): Promise<string[] | undefined> {
+    private static async validateAppEntry(entryId: number, countryCode: string, appEntry: IManifestAppEntry, apiProvider: ApiProvider): Promise<string[] | undefined> {
         let problems: string[] = [];
         const identifier = `id=${appEntry.id}, name=${appEntry.name}`;
         if (!appEntry.id) {
@@ -91,7 +92,7 @@ export class ManifestHelper {
             const filter = ManifestHelper.getVersionFilter(appEntry);
             if (!filter) { problems.push(`"Couldn't parse version (${identifier})`); }
             try {
-                const result = await apiProvider.getVersionsForApp(appEntry.id, "DE", false, filter); // TODO: Make countryCode dynamic
+                const result = await apiProvider.getVersionsForApp(appEntry.id, countryCode, false, filter);
                 if (!result) { problems.push(`"Couldn't find version in FAME repository (${identifier})`); }
             } catch {
                 problems.push(`"Couldn't find version in FAME repository (HTTP error) (${identifier})`);

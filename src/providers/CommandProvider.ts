@@ -169,8 +169,18 @@ export class CommandProvider {
         const content = currEditor.document.getText();
         if (!content) { return; }
         if (await this.checkSignedIn() === false) { return; }
+        const countries = Utilities.getConfigurationValue(SETTINGS.countrySelection) as string[];
+        if (!countries || countries.length === 0) {
+            vscode.window.showInformationMessage(`You need to provide a list of possible countries in the setting ${SETTINGS.countrySelection}.`);
+            return;
+        }
+        const countryCode = await vscode.window.showQuickPick(countries, {
+            placeHolder: '...',
+            title: 'Select country you want to validate the manifest against.'
+        });
+        if (!countryCode) { return; }
         const manifest = new ManifestHelper(content, this.apiProvider);
-        const result = await manifest.validate();
+        const result = await manifest.validate(countryCode);
         if (result.hasProblems() === false) {
             vscode.window.showInformationMessage(`No problems found in currently opened manifest.`);
         } else {

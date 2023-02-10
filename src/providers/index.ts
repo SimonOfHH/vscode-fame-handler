@@ -5,3 +5,4 @@ export * from './ValueProvider';
 export * from './DetailsWebViewProvider';
 export * from './CommandProvider';
 export * from './PrincipalSelectProvider';
+export * from './AppVersionDialogueProvider';

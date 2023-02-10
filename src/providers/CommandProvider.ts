@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME, SETTINGS } from '../constants';
-import { ApiProvider, CacheProvider, FameTreeProvider, PrincipalSelectProvider, ValueProvider } from '../providers';
+import { ApiProvider, CacheProvider, FameTreeProvider, PrincipalSelectProvider, ValueProvider,AppVersionDialogueProvider } from '../providers';
 import { FameAppCountrySubEntityVersionsTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppTreeItem, FameAppVersionTreeItem } from '../types';
 import { IFameApp } from '../types/FameTypes';
 import { ApiType, ManifestHelper, NavxHelper, Utilities } from '../utils';
@@ -103,9 +103,23 @@ export class CommandProvider {
             });
     };
     public updateAppVersionCommand = async (context: vscode.ExtensionContext, version: FameAppVersionTreeItem) => {
-        // TODO: Implement (availability, dependencies) 
         // https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/appmanagement/app-management-api#update-version
-        vscode.window.showInformationMessage(`TODO: Implement updateAppVersionCommand`);
+        if (await this.checkSignedIn() === false) { return; }
+        const inputSelection = await AppVersionDialogueProvider.selectWhatToUpdate();
+        console.log(inputSelection);
+        if ((!inputSelection) || (inputSelection.length === 0)) { return; }
+        switch (inputSelection) {
+            case "Availability":
+                const newAvailability = await AppVersionDialogueProvider.selectAvailability();
+                if ((!newAvailability) || (newAvailability.length === 0)) { return; }
+                // TODO: Test this
+                await this.apiProvider.updateAppVersion(version.appItem.id, version.appCountry.countryCode, version.appVersionItem.version, newAvailability);
+                break;
+            case "Set Dependency Compatibility":
+                // TODO: Implement this
+                break;
+        }
+        this.currTreeProvider.refresh();
     };
     public downloadAppVersionCommand = async (context: vscode.ExtensionContext, version: FameAppVersionTreeItem) => {
         if (await this.checkSignedIn() === false) { return; }

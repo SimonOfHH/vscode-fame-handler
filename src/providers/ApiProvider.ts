@@ -96,7 +96,7 @@ export class ApiProvider {
         console.log(resultArray);
         return resultArray;
     }
-    public async addCountryForApp(appId: string, countryCode : string): Promise<IFameAppCountry> {
+    public async addCountryForApp(appId: string, countryCode: string): Promise<IFameAppCountry> {
         await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
         let body = {
             countryCode: countryCode
@@ -200,6 +200,32 @@ export class ApiProvider {
         await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
         // TODO: Validate that this works
         let response = await AxiosHelper.appVersionsRequest.add(appId, countryCode, body);
+        console.log(response);
+    }
+    public async updateAppVersion(appId: string, countryCode: string, version: string, newAvailability?: string, dependencyAppId?: string, incompatibleFromVersion?: string) {
+        if (newAvailability) {
+            const allowedValues = ["Available", "Preview", "Deprecated"];
+            if (!allowedValues.includes(newAvailability)) {
+                throw Error("Not allowed value for 'Availability'");
+            }
+        }
+        let body = {};
+        if (newAvailability) {
+            body = {
+                availability: newAvailability
+            };
+        };
+        if (dependencyAppId && incompatibleFromVersion) {
+            body = {
+                appId: dependencyAppId,
+                incompatibleFromVersion: incompatibleFromVersion
+            };
+        }
+        if (!body) {
+            return;
+        }
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
+        let response = await AxiosHelper.appVersionsRequest.update(appId, countryCode, version, body);
         console.log(response);
     }
     public async downloadAppVersion(appId: string, countryCode: string, version: string, targetFolder?: string, filename?: string) {

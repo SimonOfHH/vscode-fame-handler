@@ -44,6 +44,7 @@ export class AxiosHelper {
     public static appVersionsRequest = {
         list: (appId: string, countryCode: string, filter?: string) => this.request.get<IFameAppVersionArray>(`/${appId}/countries/${countryCode}/versions${(filter) ? `?filter=${filter}` : ""}`),
         add: (appId: string, countryCode: string, body: {}) => this.request.post<IFameAppVersion>(`/${appId}/countries/${countryCode}/versions`, body),
+        update: (appId: string, countryCode: string,version: string, body: {}) => this.request.patch<IFameAppVersion>(`/${appId}/countries/${countryCode}/versions/${version}`, body),
         download: (appId: string, countryCode: string, version: string) => this.request.postStreamResponse(`/${appId}/countries/${countryCode}/versions/${version}/getPackageContents`)
     };
     public static appEnvironmentsRequest = {

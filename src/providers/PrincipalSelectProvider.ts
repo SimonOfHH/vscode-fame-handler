@@ -81,7 +81,7 @@ export class PrincipalSelectProvider {
         if (!type) { return undefined; }
         return [{ principalType: type, principalId: result }];
     };
-    private static selectRoles = async (): Promise<string[] | undefined> => {
+    public static selectRoles = async (): Promise<string[] | undefined> => {
         const type = await vscode.window.showQuickPick(["Reader", "Contributor", "Owner"], {
             placeHolder: '...',
             title: 'Select Role(s)',

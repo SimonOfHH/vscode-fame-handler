@@ -37,6 +37,7 @@ export class AxiosHelper {
     public static appPrincipalsRequest = {
         list: (appId: string) => this.request.get<IFameAppPrincipalArray>(`/${appId}/principals`),
         add: (appId: string, id: string, body: {}) => this.request.patch<IFameAppPrincipalArray>(`/${appId}/principals/${id}`, body),
+        update: (appId: string, id: string, body: {}) => this.request.patch<IFameAppPrincipalArray>(`/${appId}/principals/${id}`, body),
         details: (appId: string, id: string) => this.request.get<IFameAppPrincipal>(`/${appId}/principals/${id}`),
         delete: (appId: string, id: string) => this.request.delete<IFameAppPrincipal>(`/${appId}/principals/${id}`)
     };

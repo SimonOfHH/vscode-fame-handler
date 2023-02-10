@@ -218,6 +218,12 @@ export class ApiProvider {
         let response = await AxiosHelper.appPrincipalsRequest.add(appId, principal.principalId, body);
         console.log(response);
     }
+    public async updateAppPrincipal(appId: string, principal: IPrincipal, roles: string[]) {
+        await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
+        const body = AxiosHelper.getPrincipalBody(principal, roles);
+        let response = await AxiosHelper.appPrincipalsRequest.update(appId, principal.principalId, body);
+        console.log(response);
+    }
     public async removeAppPrincipal(appId: string, principalId: string) {
         await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
         let response = await AxiosHelper.appPrincipalsRequest.delete(appId, principalId);

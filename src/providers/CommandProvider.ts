@@ -139,10 +139,15 @@ export class CommandProvider {
         this.currTreeProvider.refresh();
     };
     public updateAppPrincipalCommand = async (context: vscode.ExtensionContext, entityPrincipalItem: FameAppPrincipalTreeItem) => {
-        // TODO: Implement
         // Endpoint is for add or update actually
         // PATCH https://apps.businesscentral.dynamics.com/v1.0/apps/{appId}/principals/{id}
-        vscode.window.showInformationMessage(`TODO: Implement updateAppPrincipalCommand`);
+        if (await this.checkSignedIn() === false) { return; }
+        const inputSelection = await PrincipalSelectProvider.selectRoles();
+        console.log(inputSelection);
+        if ((!inputSelection) || (inputSelection.length === 0)) { return; }
+        await this.apiProvider.updateAppPrincipal(entityPrincipalItem.appItem.id, { principalType: entityPrincipalItem.appPrincipal.type, principalId: entityPrincipalItem.appPrincipal.id }, inputSelection);
+        this.currTreeProvider.refresh();
+        vscode.window.showInformationMessage(`Updated principal "${entityPrincipalItem.getIdentifier()}"`);
     };
     public removeAppPrincipalCommand = async (context: vscode.ExtensionContext, principalItem: FameAppPrincipalTreeItem) => {
         // DELETE https://apps.businesscentral.dynamics.com/v1.0/apps/{appId}/principals/{id}

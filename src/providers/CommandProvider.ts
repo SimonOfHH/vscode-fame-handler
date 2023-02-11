@@ -64,13 +64,14 @@ export class CommandProvider {
     };
     public loadAllAppsCommand = async () => {
         if (await this.checkSignedIn() === false) { return; }
-        vscode.window.withProgress({
+        await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
             cancellable: false,
             title: 'Loading apps'
         }, async (progress) => {
             await this.apiProvider.collectInformationFromVersions();
         });
+        this.currTreeProvider.refresh();
     };
     public clearCacheProviderCommand = async () => {
         const cache: CacheProvider = CacheProvider.getInstance(this.currContext, CACHE_NAME);

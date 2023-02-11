@@ -28,6 +28,12 @@ You need an Azure App registration with the following permissions:
 
 ## Status / Implemented features
 
+### Overall
+
+* Provide eay-to-use UI for repository elements
+* Validate manifest.json for new releases
+
+### App Management API
 The following overview lists the state of features of the [App Management API](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/appmanagement/app-management-api) that are covered in this extension.
 
 **Entitities**<br>
@@ -57,6 +63,11 @@ The following overview lists the state of features of the [App Management API](h
     * [ ] Get environment hotfix (GET)
     * [ ] Schedule environment hotfix (POST)
     * [ ] Update environment hotfix (PATCH)
+
+**Planned / To-Do list**
+* Cover all [App Management API](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/appmanagement/app-management-api) operations
+* Bulk upload new app-versions
+* Integrate with [COSMO Alpaca](https://marketplace.visualstudio.com/items?itemName=cosmoconsult.cosmo-azure-devops) to easily create new releases
 
 ## Extension Settings
 

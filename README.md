@@ -1,6 +1,6 @@
 # vscode-fame-handler
 
-This VS Code Extension provides some functionality to make working with App Management APIs for Microsofts Embed App program easier. It'S still a work-in-progress, so expect some placeholder etc. in the code.
+This VS Code Extension provides some functionality to make working with App Management APIs for Microsofts [Embed App](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/deployment/embed-app-overview) program easier. It's still a work-in-progress, so expect some placeholder etc. in the code.
 
 ## Usage
 
@@ -44,12 +44,12 @@ The following overview lists the state of features of the [App Management API](h
     * [X] Add or update principal (PATCH)
 * **Version**<br>
     * [X] List versions (GET)
-    * [ ] validate filtering
+        * [ ] validate filtering
     * [X] Upload version (POST)
     * [X] Download version (POST)
     * [X] Update version (PATCH) (to be tested)
-        * [X] availability
-        * [X] incompatible
+        * [X] Set availability
+        * [X] Mark as incompatible
 * **Environment**
     * [X] List environments (GET)
 * **Environment Hotfix**

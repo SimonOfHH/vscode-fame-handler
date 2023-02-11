@@ -3,6 +3,8 @@ import axios from "axios";
 import * as vscode from 'vscode';
 import { AUTHORITY_BASE, CACHE_TOKEND365, CACHE_TOKENGRAPH, D365_APPS_API, GRAPH_API_BASE, SCOPE_D365_APP, SCOPE_GRAPH_USERREADALL, SETTINGS } from '../constants';
 import { CacheProvider, ValueProvider } from "../providers";
+import { IPrincipal } from "../types";
+import { Utilities } from "./Utilities";
 
 export class ApiProviderHelper {
     public static getTokenIdentifier(type: ApiType) {
@@ -145,6 +147,24 @@ export class ApiProviderHelper {
         });
     }
     //#endregion
+    public static getPrincipalBody = (principal: IPrincipal, roles: string[]) => {
+        if (principal.principalType.toLowerCase() === "user") {
+            return {
+                "aadTenantId": Utilities.getConfigurationValue(SETTINGS.d365ApiTenantId) as string,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                "Type": "User",
+                "roles": roles
+            };
+        } else if (principal.principalType.toLowerCase() === "application") {
+            return {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                "Type": "Application",
+                "roles": roles
+            };
+        } else {
+            throw Error("Invalid principal type");
+        }
+    };
 }
 export enum ApiType {
     // eslint-disable-next-line @typescript-eslint/naming-convention

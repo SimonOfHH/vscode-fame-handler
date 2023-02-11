@@ -70,7 +70,7 @@ export class ValueProvider {
         }
         return false;
     }
-    public static dateIsExpired(d: Date) {
+    private static dateIsExpired(d: Date) {
         if (d > new Date()) {
             return false;
         }

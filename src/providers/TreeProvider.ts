@@ -100,7 +100,7 @@ export class FameTreeProvider {
         this.cmdProvider.setTreeViewProvider(this);
     }
     private async getFameApps(): Promise<FameAppTreeItem[]> {
-        let apiResponse = await this.cmdProvider.apiProvider.getFameApps(false);
+        let apiResponse = await this.cmdProvider.apiProvider.getApps(false);
         let treeItems = new Array<FameAppTreeItem>;
         for (const [i, entry] of apiResponse.entries()) {
             treeItems.push(new FameAppTreeItem("App", vscode.TreeItemCollapsibleState.Collapsed, entry));

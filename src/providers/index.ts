@@ -1,4 +1,5 @@
 export * from './ApiProvider';
+export * from './ApiRequestProvider';
 export * from './CacheProvider';
 export * from './TreeProvider';
 export * from './ValueProvider';

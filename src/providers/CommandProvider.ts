@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME, SETTINGS } from '../constants';
-import { ApiProvider, CacheProvider, FameTreeProvider, PrincipalSelectProvider, ValueProvider,AppVersionDialogueProvider } from '../providers';
+import { ApiProvider, AppVersionDialogueProvider, CacheProvider, FameTreeProvider, PrincipalSelectProvider, ValueProvider } from '../providers';
 import { FameAppCountrySubEntityVersionsTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppTreeItem, FameAppVersionTreeItem } from '../types';
 import { IFameApp } from '../types/FameTypes';
 import { ApiType, ManifestHelper, NavxHelper, Utilities } from '../utils';
@@ -116,7 +116,11 @@ export class CommandProvider {
                 await this.apiProvider.updateAppVersion(version.appItem.id, version.appCountry.countryCode, version.appVersionItem.version, newAvailability);
                 break;
             case "Set Dependency Compatibility":
-                // TODO: Implement this
+                const result = await AppVersionDialogueProvider.appVersionCompatibilityDialogue(version, this.apiProvider);
+                if (!result) { return; }
+                if (!result[0] || !result[1]) { return; }
+                // TODO: Test this
+                await this.apiProvider.updateAppVersion(version.appItem.id, version.appCountry.countryCode, version.appVersionItem.version, undefined, result[0], result[1]);
                 break;
         }
         this.currTreeProvider.refresh();

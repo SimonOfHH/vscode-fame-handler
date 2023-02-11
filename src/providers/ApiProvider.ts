@@ -73,9 +73,12 @@ export class ApiProvider {
         }
         return undefined;
     }
-    public async getFameApps(fromCacheIfExisting: boolean): Promise<IFameApp[]> {
+    public async getFameApps(fromCacheIfExisting: boolean, filter?: string): Promise<IFameApp[]> {
         if (fromCacheIfExisting) {
             let cachedValues = await this.getCachedValues<IFameApp[]>(<IFameApp[]>{});
+            if (filter) {
+                cachedValues = cachedValues.filter(element => element.name.includes(filter));
+            }
             if (cachedValues) {
                 return cachedValues;
             }
@@ -86,6 +89,9 @@ export class ApiProvider {
         const namesMap = await ValueProvider.getMapFromCache(CACHE_IDNAMEMAP, this.cmdProvider);
         if (namesMap) {
             resultArray.map(entry => { entry.name = (namesMap.get(entry.id) as string); return entry; });
+        }
+        if (filter) {
+            resultArray = resultArray.filter(element => element.name.includes(filter));
         }
         this.cache.put("v1", CACHE_FAMEAPPS, resultArray);
         return resultArray;
@@ -225,8 +231,9 @@ export class ApiProvider {
             return;
         }
         await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);
-        let response = await AxiosHelper.appVersionsRequest.update(appId, countryCode, version, body);
-        console.log(response);
+        // TODO: activate
+        //let response = await AxiosHelper.appVersionsRequest.update(appId, countryCode, version, body);
+        //console.log(response);
     }
     public async downloadAppVersion(appId: string, countryCode: string, version: string, targetFolder?: string, filename?: string) {
         await ApiProviderHelper.configureAxiosInstance(this.cache, ApiType.D365);

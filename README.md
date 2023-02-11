@@ -31,32 +31,32 @@ You need an Azure App registration with the following permissions:
 The following overview lists the state of features of the [App Management API](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/appmanagement/app-management-api) that are covered in this extension.
 
 **Entitities**<br>
-**App**<br>
-- [X] List apps (GET)<br>
-**Country**<br>
-- [X] List countries (GET)
-- [X] Get Country (GET)
-- [ ] Add or update country (PATCH) (not sure what this is for)<br>
-**Principal**<br>
-- [X] List principals (GET)
-- [X] Get principal by ID (GET)
-- [X] Remove principal (DELETE)
-- [X] Add or update principal (PATCH)<br>
-**Version**<br>
-- [X] List versions (GET)
-- [ ] validate filtering
-- [X] Upload version (POST)
-- [X] Download version (POST)
-- [X] Update version (PATCH) (to be tested)
--- [X] availability
--- [X] incompatible<br>
-**Environment**<br>
-- [X] List environments (GET)<br>
-**Environment Hotfix**<br>
-- [ ] List environment hotfixes (GET)
-- [ ] Get environment hotfix (GET)
-- [ ] Schedule environment hotfix (POST)
-- [ ] Update environment hotfix (PATCH)
+* **App**
+    * [X] List apps (GET)
+* **Country**
+    * [X] List countries (GET)
+    * [X] Get Country (GET)
+    * [ ] Add or update country (PATCH) (not sure what this is for)
+* **Principal**
+    * [X] List principals (GET)
+    * [X] Get principal by ID (GET)
+    * [X] Remove principal (DELETE)
+    * [X] Add or update principal (PATCH)
+* **Version**<br>
+    * [X] List versions (GET)
+    * [ ] validate filtering
+    * [X] Upload version (POST)
+    * [X] Download version (POST)
+    * [X] Update version (PATCH) (to be tested)
+        * [X] availability
+        * [X] incompatible
+* **Environment**
+    * [X] List environments (GET)
+* **Environment Hotfix**
+    * [ ] List environment hotfixes (GET)
+    * [ ] Get environment hotfix (GET)
+    * [ ] Schedule environment hotfix (POST)
+    * [ ] Update environment hotfix (PATCH)
 
 ## Extension Settings
 

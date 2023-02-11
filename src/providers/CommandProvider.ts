@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME, SETTINGS } from '../constants';
 import { ApiProvider, AppVersionDialogueProvider, CacheProvider, FameTreeProvider, PrincipalSelectProvider, ValueProvider } from '../providers';
-import { FameAppCountrySubEntityVersionsTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppTreeItem, FameAppVersionTreeItem } from '../types';
+import { FameAppTreeItem, FameAppVersionTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppCountrySubEntityVersionsTreeItem } from '../types';
 import { IFameApp } from '../types/FameTypes';
 import { ApiType, ManifestHelper, NavxHelper, Utilities } from '../utils';
 
@@ -15,15 +15,15 @@ export class CommandProvider {
         this.currContext = context;
         this.currTreeProvider = new FameTreeProvider(this);
     }
-    public signInCommand = async (context: vscode.ExtensionContext) => {
+    public signInCommand = async () => {
         this.apiProvider.signIn(ApiType.D365);
         this.apiProvider.signIn(ApiType.Graph);
     };
-    public statusBarUpdateCommand = async (context: vscode.ExtensionContext, tokenInfoStatusBarItem: vscode.StatusBarItem) => {
+    public statusBarUpdateCommand = async (tokenInfoStatusBarItem: vscode.StatusBarItem) => {
         tokenInfoStatusBarItem.text = await ValueProvider.getTokenLifetimeFromCache(this);
         tokenInfoStatusBarItem.show();
     };
-    public importAppIdNameMapCommand = async (context: vscode.ExtensionContext) => {
+    public importAppIdNameMapCommand = async () => {
         let cbContent = await vscode.env.clipboard.readText();
         if (!cbContent.startsWith('{') || !cbContent.endsWith('}')) {
             cbContent = "";
@@ -41,14 +41,14 @@ export class CommandProvider {
         const map = new Map<string, string>(Object.entries(JSON.parse(searchQuery as string)));
         ValueProvider.putMapIntoCache(map, CACHE_IDNAMEMAP, this);
     };
-    public exportAppIdNameMapCommand = async (context: vscode.ExtensionContext) => {
-        const cache: CacheProvider = CacheProvider.getInstance(context, "cache");
+    public exportAppIdNameMapCommand = async () => {
+        const cache: CacheProvider = CacheProvider.getInstance(this.currContext, "cache");
         let cachedApps = await cache.get("v1", CACHE_FAMEAPPS) as IFameApp[];
         let map = await ValueProvider.appsToIdNameMap(cachedApps, this);
         vscode.env.clipboard.writeText(JSON.stringify(Object.fromEntries(map)));
         vscode.window.showInformationMessage(`Copied to clipboard.`);
     };
-    public uploadAppVersionCommand = async (context: vscode.ExtensionContext, version: FameAppCountrySubEntityVersionsTreeItem) => {
+    public uploadAppVersionCommand = async (version: FameAppCountrySubEntityVersionsTreeItem) => {
         if (await this.checkSignedIn() === false) { return; }
         const file = await Utilities.selectFileDialog();
         if (file) {
@@ -62,10 +62,7 @@ export class CommandProvider {
             vscode.window.showInformationMessage(`Successfully uploaded file: ${file}`);
         }
     };
-    public setExtensionContextCommand = async (context: vscode.ExtensionContext) => {
-        this.currContext = context;
-    };
-    public loadAllAppsCommand = async (context: vscode.ExtensionContext) => {
+    public loadAllAppsCommand = async () => {
         if (await this.checkSignedIn() === false) { return; }
         vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
@@ -75,11 +72,11 @@ export class CommandProvider {
             await this.apiProvider.collectInformationFromVersions();
         });
     };
-    public clearCacheProviderCommand = async (context: vscode.ExtensionContext) => {
-        const cache: CacheProvider = CacheProvider.getInstance(context, CACHE_NAME);
+    public clearCacheProviderCommand = async () => {
+        const cache: CacheProvider = CacheProvider.getInstance(this.currContext, CACHE_NAME);
         cache.clear();
     };
-    public assignAppToCountryCommand = async (context: vscode.ExtensionContext, app: FameAppTreeItem) => {
+    public assignAppToCountryCommand = async (app: FameAppTreeItem) => {
         // TODO: Validate 
         // https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/appmanagement/app-management-api#add-or-update-country
         const countries = Utilities.getConfigurationValue(SETTINGS.countrySelection) as string[];
@@ -102,7 +99,7 @@ export class CommandProvider {
                 }
             });
     };
-    public updateAppVersionCommand = async (context: vscode.ExtensionContext, version: FameAppVersionTreeItem) => {
+    public updateAppVersionCommand = async (version: FameAppVersionTreeItem) => {
         // https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/appmanagement/app-management-api#update-version
         if (await this.checkSignedIn() === false) { return; }
         const inputSelection = await AppVersionDialogueProvider.selectWhatToUpdate();
@@ -125,13 +122,13 @@ export class CommandProvider {
         }
         this.currTreeProvider.refresh();
     };
-    public downloadAppVersionCommand = async (context: vscode.ExtensionContext, version: FameAppVersionTreeItem) => {
+    public downloadAppVersionCommand = async (version: FameAppVersionTreeItem) => {
         if (await this.checkSignedIn() === false) { return; }
         const targetDirectory = await Utilities.selectFolderDialog('Select download folder');
         const filename = await this.apiProvider.downloadAppVersion(version.appVersionItem.appId, version.appVersionItem.countryCode, version.appVersionItem.version, targetDirectory, `${version.appItem.publisher}_${version.appItem.name}_${version.appVersionItem.version}`);
         vscode.window.showInformationMessage(`Downloaded to ${filename}`);
     };
-    public inspectAppVersionNavxCommand = async (context: vscode.ExtensionContext, version: FameAppVersionTreeItem) => {
+    public inspectAppVersionNavxCommand = async (version: FameAppVersionTreeItem) => {
         if (await this.checkSignedIn() === false) { return; }
         const filename = await this.apiProvider.downloadAppVersion(version.appVersionItem.appId, version.appVersionItem.countryCode, version.appVersionItem.version, undefined, `${version.appItem.publisher}_${version.appItem.name}_${version.appVersionItem.version}-1`);
 
@@ -144,8 +141,7 @@ export class CommandProvider {
             vscode.window.showTextDocument(doc);
         });
     };
-    public addAppPrincipalCommand = async (context: vscode.ExtensionContext, entityPrincipalItem: FameAppSubEntityPrincipalsTreeItem) => {
-        // Endpoint is for add or update actually
+    public addAppPrincipalCommand = async (entityPrincipalItem: FameAppSubEntityPrincipalsTreeItem) => {
         // PATCH https://apps.businesscentral.dynamics.com/v1.0/apps/{appId}/principals/{id}    
         if (await this.checkSignedIn() === false) { return; }
         const inputSelection = await PrincipalSelectProvider.selectPrincipalDialog(this.apiProvider);
@@ -156,8 +152,7 @@ export class CommandProvider {
         });
         this.currTreeProvider.refresh();
     };
-    public updateAppPrincipalCommand = async (context: vscode.ExtensionContext, entityPrincipalItem: FameAppPrincipalTreeItem) => {
-        // Endpoint is for add or update actually
+    public updateAppPrincipalCommand = async (entityPrincipalItem: FameAppPrincipalTreeItem) => {
         // PATCH https://apps.businesscentral.dynamics.com/v1.0/apps/{appId}/principals/{id}
         if (await this.checkSignedIn() === false) { return; }
         const inputSelection = await PrincipalSelectProvider.selectRoles();
@@ -167,7 +162,7 @@ export class CommandProvider {
         this.currTreeProvider.refresh();
         vscode.window.showInformationMessage(`Updated principal "${entityPrincipalItem.getIdentifier()}"`);
     };
-    public removeAppPrincipalCommand = async (context: vscode.ExtensionContext, principalItem: FameAppPrincipalTreeItem) => {
+    public removeAppPrincipalCommand = async (principalItem: FameAppPrincipalTreeItem) => {
         // DELETE https://apps.businesscentral.dynamics.com/v1.0/apps/{appId}/principals/{id}
         if (await this.checkSignedIn() === false) { return; }
         vscode.window.showWarningMessage(`Are you sure that you want to remove principal "${principalItem.getIdentifier()}" from app "${principalItem.appItem.name}?"`, "Yes", "No").
@@ -186,7 +181,7 @@ export class CommandProvider {
         }
         return true;
     }
-    public validateManifestCommand = async (context: vscode.ExtensionContext) => {
+    public validateManifestCommand = async () => {
         const currEditor = vscode.window.activeTextEditor;
         if (!currEditor) { return; }
         const content = currEditor.document.getText();
@@ -215,7 +210,7 @@ export class CommandProvider {
             });
         }
     };
-    public testUserCommand = async (context: vscode.ExtensionContext) => {
+    public testUserCommand = async () => {
         // TODO: Implement
         // just for testing
         vscode.window.showInformationMessage(`TODO: Implement testUserCommand`);

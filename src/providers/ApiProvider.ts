@@ -252,6 +252,21 @@ export class ApiProvider {
         console.log(resultArray);
         return resultArray;
     }
+    public async getEnvironmentHotfixForApp(appId: string, countryCode: string, id: string): Promise<IFameAppEnvironmentHotifx> {
+        const result = await this.appEnvironmentHotifxRequestProvider.details(appId, countryCode, id);
+        console.log(result);
+        return result;
+    }
+    public async scheduleEnvironmentHotfixForApp(appId: string, countryCode: string, body: {}): Promise<IFameAppEnvironmentHotifx> {
+        const result = await this.appEnvironmentHotifxRequestProvider.schedule(appId, countryCode, body);
+        console.log(result);
+        return result;
+    }
+    public async updateEnvironmentHotfixForApp(appId: string, countryCode: string, id: string, body: {}): Promise<IFameAppEnvironmentHotifx> {
+        const result = await this.appEnvironmentHotifxRequestProvider.update(appId, countryCode, id, body);
+        console.log(result);
+        return result;
+    }
     //#endregion (D365) Environment Hotfix requests
 
     private async updateCachedApps(versions: IFameAppVersion[]) {

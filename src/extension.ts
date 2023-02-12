@@ -30,6 +30,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.scheduleEnvironmentHotfixFromVersionCommand}`, (version: FameAppVersionTreeItem) => cmdProvider.scheduleEnvironmentHotfixFromVersionCommand(version)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.updateEnvironmentHotfixCommand}`, (environmentHotfixItem : FameAppEnvironmentHotfixTreeItem) => cmdProvider.updateEnvironmentHotfixCommand(environmentHotfixItem)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.statusBarUpdateCommand}`, () => cmdProvider.statusBarUpdateCommand(tokenInfoStatusBarItem)));
+	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.sortAppsByIdCommand}`, () => cmdProvider.sortAppsByIdCommand()));
+	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.sortAppsByNameCommand}`, () => cmdProvider.sortAppsByNameCommand()));
+	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.sortAppsByOriginalOrderCommand}`, () => cmdProvider.sortAppsByOriginalOrderCommand()));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.testUserCommand}`, () => cmdProvider.testUserCommand()));
 
 	// Register Status Bar (updates every second)

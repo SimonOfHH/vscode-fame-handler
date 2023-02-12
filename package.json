@@ -109,6 +109,18 @@
       {
         "command": "famehandler.updateEnvironmentHotfixCommand",
         "title": "Update Hotfix..."
+      },
+      {
+        "command": "famehandler.sortAppsByOriginalOrderCommand",
+        "title": "... by original order"
+      },
+      {
+        "command": "famehandler.sortAppsByIdCommand",
+        "title": "... by App ID"
+      },
+      {
+        "command": "famehandler.sortAppsByNameCommand",
+        "title": "... by App name"
       }
     ],
     "viewsContainers": {
@@ -144,6 +156,11 @@
       "view/title": [
         {
           "command": "famehandler.refreshEntryCommand",
+          "when": "view == famehandler.appsView",
+          "group": "navigation"
+        },
+        {
+          "submenu": "famehandler.sorting",
           "when": "view == famehandler.appsView",
           "group": "navigation"
         },
@@ -209,6 +226,20 @@
           "group": "famehandler@0"
         }
       ],
+      "famehandler.sorting": [
+        {
+          "command": "famehandler.sortAppsByOriginalOrderCommand",
+          "group": "1_sortBy@0"
+        },
+        {
+          "command": "famehandler.sortAppsByIdCommand",
+          "group": "1_sortBy@1"
+        },
+        {
+          "command": "famehandler.sortAppsByNameCommand",
+          "group": "1_sortBy@2"
+        }
+      ],
       "commandPalette": [
         {
           "command": "famehandler.refreshEntryCommand",
@@ -261,9 +292,28 @@
         {
           "command": "famehandler.updateEnvironmentHotfixCommand",
           "when": "false"
+        },
+        {
+          "command": "famehandler.sortAppsByOriginalOrderCommand",
+          "when": "false"
+        },
+        {
+          "command": "famehandler.sortAppsByIdCommand",
+          "when": "false"
+        },
+        {
+          "command": "famehandler.sortAppsByNameCommand",
+          "when": "false"
         }
       ]
     },
+    "submenus": [
+      {
+        "id": "famehandler.sorting",
+        "label": "Sort...",
+        "icon": "$(fold-down)"
+      }
+    ],
     "configuration": {
       "title": "FAME Handler",
       "properties": {

@@ -2,8 +2,8 @@ import { PublicClientApplication } from "@azure/msal-node";
 import { AxiosError } from "axios";
 import { ExtensionContext } from 'vscode';
 import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME } from '../constants';
-import { AppCountryRequestProvider, AppEnvironmentRequestProvider, AppPrincipalRequestProvider, AppRequestProvider, AppVersionRequestProvider, CacheProvider, CommandProvider, UserRequestProvider, ValueProvider } from '../providers';
-import { IFameApp, IFameAppCountry, IFameAppEnvironment, IFameAppPrincipal, IFameAppVersion, IGraphUser, IPrincipal } from '../types';
+import { AppCountryRequestProvider, AppEnvironmentHotfixRequestProvider, AppEnvironmentRequestProvider, AppPrincipalRequestProvider, AppRequestProvider, AppVersionRequestProvider, CacheProvider, CommandProvider, UserRequestProvider, ValueProvider } from '../providers';
+import { IFameApp, IFameAppCountry, IFameAppEnvironment, IFameAppEnvironmentHotifx, IFameAppPrincipal, IFameAppVersion, IGraphUser, IPrincipal } from '../types';
 import { ApiProviderHelper, ApiType, Utilities } from "../utils";
 
 export class ApiProvider {
@@ -11,12 +11,13 @@ export class ApiProvider {
     private pca = new PublicClientApplication(ApiProviderHelper.getAuthConfig());
     private cachedPrincipalInformation: Map<string, IGraphUser> = new Map();
     private cmdProvider: CommandProvider;
-    
+
     private appRequestProvider: AppRequestProvider;
     private appCountryRequestProvider: AppCountryRequestProvider;
     private appPrincipalRequestProvider: AppPrincipalRequestProvider;
     private appVersionRequestProvider: AppVersionRequestProvider;
     private appEnvironmentRequestProvider: AppEnvironmentRequestProvider;
+    private appEnvironmentHotifxRequestProvider: AppEnvironmentHotfixRequestProvider;
     private userRequestProvider: UserRequestProvider;
 
     constructor(context: ExtensionContext, cmdProvider: CommandProvider) {
@@ -27,6 +28,7 @@ export class ApiProvider {
         this.appPrincipalRequestProvider = new AppPrincipalRequestProvider(this.cache);
         this.appVersionRequestProvider = new AppVersionRequestProvider(this.cache);
         this.appEnvironmentRequestProvider = new AppEnvironmentRequestProvider(this.cache);
+        this.appEnvironmentHotifxRequestProvider = new AppEnvironmentHotfixRequestProvider(this.cache);
         this.userRequestProvider = new UserRequestProvider(this.cache);
     }
     public async signIn(type: ApiType) {
@@ -228,6 +230,30 @@ export class ApiProvider {
         return resultMap;
     }
     //#endregion (D365) Environment requests
+    //#region (D365) Environment Hotfix requests
+    public async getEnvironmentHotfixesForApp(appId: string, countryCode: string, environmentAadTenantId?: string, environmentName?: string): Promise<IFameAppEnvironmentHotifx[]> {
+        let resultArray: IFameAppEnvironmentHotifx[] = [];
+        let filter = undefined;
+        let filters: string[] = [];
+        if (environmentAadTenantId) {
+            filters.push(`environmentAadTenantId eq ${environmentAadTenantId}`);
+        }
+        if (environmentName) {
+            filters.push(`environmentName eq '${environmentName}'`);
+        }
+        if (filters.length > 0) {
+            filter = filters.join(" and ");
+        }
+        if (filter) {
+            resultArray = (await this.appEnvironmentHotifxRequestProvider.listFiltered(appId, countryCode, filter)).value;
+        } else {
+            resultArray = (await this.appEnvironmentHotifxRequestProvider.list(appId, countryCode)).value;
+        }
+        console.log(resultArray);
+        return resultArray;
+    }
+    //#endregion (D365) Environment Hotfix requests
+
     private async updateCachedApps(versions: IFameAppVersion[]) {
         let cachedApps = await this.cache.get("v1", CACHE_FAMEAPPS) as IFameApp[];
         if (cachedApps && versions) {

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { IFameApp, IFameAppCountry, IFameAppEnvironment, IFameAppPrincipal, IFameAppVersion } from '../types';
+import { IFameApp, IFameAppCountry, IFameAppEnvironment, IFameAppEnvironmentHotifx, IFameAppPrincipal, IFameAppVersion } from '../types';
 import { Utilities } from '../utils';
 
 export class FameTreeItem extends vscode.TreeItem {
@@ -211,6 +211,47 @@ export class FameAppEnvironmentTreeItem extends FameTreeItem {
     }
     iconPath = new vscode.ThemeIcon('database');
     contextValue = 'environment';
+}
+export class FameAppEnvironmentSubEntityTreeItem extends FameAppEnvironmentTreeItem{
+    constructor(
+        public readonly label: string,
+        public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+        public readonly appItem: IFameApp,
+        public readonly appEnvironment: IFameAppEnvironment,
+        public readonly appCountry: IFameAppCountry,
+        public readonly countryCode?: string,
+        public readonly command?: vscode.Command,
+        public readonly tooltip?: string,
+        public readonly description?: string
+    ) {
+        super(label, collapsibleState, appItem, appEnvironment, appCountry);
+    }
+    iconPath = new vscode.ThemeIcon('bug');
+    contextValue = 'environmentSubentity';
+}
+export class FameAppEnvironmentHotfixTreeItem extends FameTreeItem {
+    constructor(
+        public readonly label: string,
+        public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+        public readonly appItem: IFameApp,
+        public readonly appEnvironment: IFameAppEnvironment,
+        public readonly appCountry: IFameAppCountry,
+        public readonly appHotfix: IFameAppEnvironmentHotifx,
+        public readonly countryCode?: string,
+        public readonly command?: vscode.Command,
+        public readonly tooltip?: string,
+        public readonly description?: string
+    ) {
+        super(label, collapsibleState, appItem);
+        this.description = appHotfix.targetAppVersion;
+        this.tooltip = `${appHotfix.targetAppVersion}: ${appHotfix.status}`;
+        if (showPlaceholder() === true) {
+            this.description = "<Hotfix Placeholder>";
+            this.tooltip = "<Hotfix Status Placeholder>";
+        }
+    }
+    iconPath = new vscode.ThemeIcon('file-text');
+    contextValue = 'environmentHotfix';
 }
 // Used for public screenshots, to avoid publishing information not meant to be published
 export const showPlaceholder = () => {

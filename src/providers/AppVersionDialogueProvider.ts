@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { ApiProvider } from '../providers';
-import { FameAppVersionTreeItem, IFameApp, IFameAppDependency, IFameAppVersion } from '../types';
+import { FameAppVersionTreeItem, IFameAppDependency, IFameAppVersion } from '../types';
 
 export class AppVersionDialogueProvider {
     public static selectWhatToUpdate = async (): Promise<string | undefined> => {

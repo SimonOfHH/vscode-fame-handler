@@ -18,26 +18,41 @@ export class FameTreeProvider {
     getTreeItem(element: FameAppTreeItem): vscode.TreeItem {
         return element;
     }
-    async getChildren(element?: vscode.TreeItem): Promise<vscode.TreeItem[] | undefined> {
+    private async isConfigured(element?: vscode.TreeItem): Promise<boolean> {
         if (Utilities.configurationExists() === false) {
-            return undefined;
+            return false;
         }
         if (this.cmdProvider.apiProvider) {
             if (await this.cmdProvider.apiProvider.isSignedIn(ApiType.D365) === false) {
-                return undefined;
+                return false;
             }
             if (await this.cmdProvider.apiProvider.isSignedIn(ApiType.Graph) === false) {
-                return undefined;
+                return false;
             }
         }
-
         if ((!element) && (!this.cmdProvider.apiProvider)) {
+            return false;
+        }
+        return true;
+    }
+    async getChildren(element?: vscode.TreeItem): Promise<vscode.TreeItem[] | undefined> {
+        if (!this.isConfigured(element)) {
             return undefined;
         }
+        // Current menu structure is like this:
+        //  [0] [FameAppTreeItem]                            <App>..
+        //  [1] [FameAppSubEntityCountriesTreeItem]            Countries
+        //  [2] [FameAppCountryTreeItem]                         <Country>..
+        //  [3] [FameAppVersionTreeItem]                           Versions
+        //  [3] [FameAppCountrySubEntityEnvironmentsTreeItem]      Environments
+        //  [5] [FameAppEnvironmentTenantTreeItem]                   <Tenant>
+        //  [5] [FameAppEnvironmentTreeItem]                           <Environment>..
+        //  [1] [FameAppSubEntityPrincipalsTreeItem]         Principals
+        //  [2] [FameAppPrincipalTreeItem]                     <Principal>..
         if (!element) {
-            return await this.getFameApps();
+            return await this.getApps();
         } else if (element instanceof FameAppTreeItem) {
-            return await this.getFameAppsSubEntities(element);
+            return await this.getAppsSubEntities(element);
         } else if (element instanceof FameAppSubEntityTreeItem) {
             if (element instanceof FameAppSubEntityCountriesTreeItem) {
                 return await this.getCountriesForApp(element);
@@ -53,7 +68,7 @@ export class FameTreeProvider {
         } else if (element instanceof FameAppEnvironmentTenantTreeItem) {
             return await this.getEnvironmentsForAppCountry(element);
         } else if (element instanceof FameAppCountryTreeItem) {
-            return await this.getFameAppCountrySubEntities(element);
+            return await this.getAppCountrySubEntities(element);
         }
         return Promise.resolve([]);
     }
@@ -99,7 +114,7 @@ export class FameTreeProvider {
         context.subscriptions.push(tree);
         this.cmdProvider.setTreeViewProvider(this);
     }
-    private async getFameApps(): Promise<FameAppTreeItem[]> {
+    private async getApps(): Promise<FameAppTreeItem[]> {
         let apiResponse = await this.cmdProvider.apiProvider.getApps(false);
         let treeItems = new Array<FameAppTreeItem>;
         for (const [i, entry] of apiResponse.entries()) {
@@ -107,7 +122,7 @@ export class FameTreeProvider {
         }
         return treeItems;
     }
-    private async getFameAppsSubEntities(element?: FameAppTreeItem): Promise<FameAppSubEntityTreeItem[]> {
+    private async getAppsSubEntities(element?: FameAppTreeItem): Promise<FameAppSubEntityTreeItem[]> {
         let treeItems = new Array<FameAppSubEntityTreeItem>;
         treeItems.push(new FameAppSubEntityCountriesTreeItem("Countries", vscode.TreeItemCollapsibleState.Collapsed, element?.appItem as IFameApp));
         treeItems.push(new FameAppSubEntityPrincipalsTreeItem("Principals", vscode.TreeItemCollapsibleState.Collapsed, element?.appItem as IFameApp));
@@ -129,7 +144,7 @@ export class FameTreeProvider {
         }
         return treeItems;
     }
-    private async getFameAppCountrySubEntities(element?: FameAppCountryTreeItem): Promise<FameAppCountrySubEntityTreeItem[]> {
+    private async getAppCountrySubEntities(element?: FameAppCountryTreeItem): Promise<FameAppCountrySubEntityTreeItem[]> {
         let treeItems = new Array<FameAppCountrySubEntityTreeItem>;
         treeItems.push(new FameAppCountrySubEntityVersionsTreeItem("Versions", vscode.TreeItemCollapsibleState.Collapsed, element?.appItem as IFameApp, element?.appCountry as IFameAppCountry));
         treeItems.push(new FameAppCountrySubEntityEnvironmentsTreeItem("Environments", vscode.TreeItemCollapsibleState.Collapsed, element?.appItem as IFameApp, element?.appCountry as IFameAppCountry));

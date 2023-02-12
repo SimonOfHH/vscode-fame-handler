@@ -99,7 +99,7 @@ export class ApiProvider {
         }
         let resultArray = (await this.appRequestProvider.list()).value;
         console.log(resultArray);
-        const namesMap = await ValueProvider.getMapFromCache(CACHE_IDNAMEMAP, this.cmdProvider);
+        const namesMap = await ValueProvider.getMapFromCache(CACHE_IDNAMEMAP, this.cache);
         if (namesMap) {
             resultArray.map(entry => { entry.name = (namesMap.get(entry.id) as string); return entry; });
         }
@@ -241,7 +241,7 @@ export class ApiProvider {
                 updatedApps.push(app);
             }
             this.cache.put("v1", CACHE_FAMEAPPS, updatedApps);
-            await ValueProvider.appsToIdNameMap(cachedApps, this.cmdProvider);
+            await ValueProvider.appsToIdNameMap(cachedApps, this.cache);
         }
     }
     public async collectInformationFromVersions() {

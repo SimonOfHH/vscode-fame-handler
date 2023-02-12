@@ -20,7 +20,7 @@ export class CommandProvider {
         this.apiProvider.signIn(ApiType.Graph);
     };
     public statusBarUpdateCommand = async (tokenInfoStatusBarItem: vscode.StatusBarItem) => {
-        tokenInfoStatusBarItem.text = await ValueProvider.getTokenLifetimeFromCache(this);
+        tokenInfoStatusBarItem.text = await ValueProvider.getTokenLifetimeFromCache1(CacheProvider.getInstance(this.currContext, CACHE_NAME));
         tokenInfoStatusBarItem.show();
     };
     public importAppIdNameMapCommand = async () => {
@@ -39,12 +39,12 @@ export class CommandProvider {
             return;
         }
         const map = new Map<string, string>(Object.entries(JSON.parse(searchQuery as string)));
-        ValueProvider.putMapIntoCache(map, CACHE_IDNAMEMAP, this);
+        ValueProvider.putMapIntoCache(map, CACHE_IDNAMEMAP, CacheProvider.getInstance(this.currContext, CACHE_NAME));
     };
     public exportAppIdNameMapCommand = async () => {
-        const cache: CacheProvider = CacheProvider.getInstance(this.currContext, "cache");
+        const cache: CacheProvider = CacheProvider.getInstance(this.currContext, CACHE_NAME);
         let cachedApps = await cache.get("v1", CACHE_FAMEAPPS) as IFameApp[];
-        let map = await ValueProvider.appsToIdNameMap(cachedApps, this);
+        let map = await ValueProvider.appsToIdNameMap(cachedApps, cache);
         vscode.env.clipboard.writeText(JSON.stringify(Object.fromEntries(map)));
         vscode.window.showInformationMessage(`Copied to clipboard.`);
     };
@@ -53,13 +53,14 @@ export class CommandProvider {
         const file = await Utilities.selectFileDialog();
         if (file) {
             const navx = await NavxHelper.async(file);
+            // TODO: Check if more properties need to be validated
             if (navx.getAppValue("Id") !== version.appItem.id) {
                 vscode.window.showErrorMessage(`ID from selected app file and selected version do not match. Currently selected is ${version.appItem.id}, but the file contains ${navx.getAppValue("Id")}`);
                 return;
             }
             const base64content = Utilities.getFileBytesAsBase64(file);
             let response = await this.apiProvider.addNewAppVersion(version.appItem.id, version.appCountry.countryCode, "Available", base64content);
-            vscode.window.showInformationMessage(`Successfully uploaded file: ${file}`);
+            vscode.window.showInformationMessage(`Successfully uploaded file: ${file} (Response: ${response}).`);
         }
     };
     public loadAllAppsCommand = async () => {
@@ -180,13 +181,23 @@ export class CommandProvider {
             vscode.window.showWarningMessage(`You need to be signed in for this.`);
             return false;
         }
+        if (await this.apiProvider.isSignedIn(ApiType.Graph) === false) {
+            vscode.window.showWarningMessage(`You need to be signed in for this.`);
+            return false;
+        }
         return true;
     }
     public validateManifestCommand = async () => {
         const currEditor = vscode.window.activeTextEditor;
-        if (!currEditor) { return; }
+        if (!currEditor) {
+            vscode.window.showInformationMessage(`You need to open a manifest.json file first.`);
+            return;
+        }
         const content = currEditor.document.getText();
-        if (!content) { return; }
+        if (!content) {
+            vscode.window.showInformationMessage(`You need to open a manifest.json file first.`);
+            return;
+        }
         if (await this.checkSignedIn() === false) { return; }
         const countries = Utilities.getConfigurationValue(SETTINGS.countrySelection) as string[];
         if (!countries || countries.length === 0) {

@@ -1,45 +1,35 @@
+import { AuthenticationResult } from "@azure/msal-node";
 import * as vscode from 'vscode';
+import { CACHE_IDNAMEMAP, CACHE_TOKEND365, CACHE_TOKENGRAPH, SETTINGS } from '../constants';
 import { IFameApp, IPrincipalSets } from '../types';
 import { CacheProvider } from './CacheProvider';
-import { CommandProvider } from './CommandProvider';
-import { CACHE_NAME, CACHE_IDNAMEMAP, SETTINGS, CACHE_TOKEND365, CACHE_TOKENGRAPH } from '../constants';
 import exp = require('constants');
-import { AuthenticationResult } from "@azure/msal-node";
 
 export class ValueProvider {
-    private static cache: CacheProvider;
-
-    public static async appsToIdNameMap(array: IFameApp[], cmdProvider: CommandProvider) {
+    public static async appsToIdNameMap(array: IFameApp[], cache: CacheProvider) {
         const map = new Map();
         for (const [i, entry] of array.entries()) {
             if (entry.name) {
                 map.set(entry.id, entry.name);
             }
         }
-        await this.initializeCache(cmdProvider.currContext);
-        await this.putMapIntoCache(map, CACHE_IDNAMEMAP, cmdProvider);
+        await this.putMapIntoCache(map, CACHE_IDNAMEMAP, cache);
         return map;
     }
-    public static async putMapIntoCache(map: Map<string, string>, identifier: string, cmdProvider: CommandProvider) {
-        await this.initializeCache(cmdProvider.currContext);
+    public static async putMapIntoCache(map: Map<string, string>, identifier: string, cache: CacheProvider) {
         // Don't let it expire (set year to 9999)
         let expiration = new Date();
         expiration.setFullYear(9999);
-        this.cache.put('v1', identifier, Object.fromEntries(map), expiration);
+        await cache.put('v1', identifier, Object.fromEntries(map), expiration);
     }
-    public static async getMapFromCache(identifier: string, cmdProvider: CommandProvider) {
-        await this.initializeCache(cmdProvider.currContext);
-        let mapRaw = await this.cache.get('v1', CACHE_IDNAMEMAP);
+    public static async getMapFromCache(identifier: string, cache: CacheProvider) {
+        let mapRaw = await cache.get('v1', identifier);
         if (!mapRaw) { return; }
         const map = new Map<string, string>(Object.entries(mapRaw));
         return map;
     }
-    private static async initializeCache(context: vscode.ExtensionContext) {
-        if (this.cache) { return; }
-        this.cache = CacheProvider.getInstance(context, CACHE_NAME, { v1: {}, beta: {} });
-    }
-    public static async addNamesToApps(apps: IFameApp[], cmdProvider: CommandProvider) {
-        const namesMap = await this.getMapFromCache(CACHE_IDNAMEMAP, cmdProvider);
+    public static async addNamesToApps(apps: IFameApp[], cache: CacheProvider) {
+        const namesMap = await this.getMapFromCache(CACHE_IDNAMEMAP, cache);
         if (!namesMap) { return; }
         return apps.map(entry => { entry.name = (namesMap.get(entry.id) as string); return entry; });
     }
@@ -50,10 +40,9 @@ export class ValueProvider {
         }
         return undefined;
     }
-    public static async getTokenLifetimeFromCache(cmdProvider: CommandProvider) {
-        await this.initializeCache(cmdProvider.currContext);
-        let tokend365 = await this.cache.get('v1', CACHE_TOKEND365) as AuthenticationResult;
-        let tokengraph = await this.cache.get('v1', CACHE_TOKENGRAPH) as AuthenticationResult;
+    public static async getTokenLifetimeFromCache1(cache: CacheProvider) {
+        let tokend365 = await cache.get('v1', CACHE_TOKEND365) as AuthenticationResult;
+        let tokengraph = await cache.get('v1', CACHE_TOKENGRAPH) as AuthenticationResult;
         if ((!tokend365) || this.tokenIsExpired(tokend365) || this.tokenIsExpired(tokengraph)) {
             return `FAME: Not signed in`;
         }

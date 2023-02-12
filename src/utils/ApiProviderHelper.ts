@@ -52,18 +52,13 @@ export class ApiProviderHelper {
         open(url);
     }
     public static getAuthConfig() {
-        if (!vscode.workspace.getConfiguration(SETTINGS.key).get(SETTINGS.d365ApiClientId)) {
-            vscode.window.showInformationMessage(`You need to setup configuration for ${SETTINGS.d365ApiClientId}`);
-            throw Error(`You need to setup configuration for ${SETTINGS.d365ApiClientId}`);
-        }
-        if (!vscode.workspace.getConfiguration(SETTINGS.key).get(SETTINGS.d365ApiTenantId)) {
-            vscode.window.showInformationMessage(`You need to setup configuration for ${SETTINGS.d365ApiTenantId}`);
-            throw Error(`You need to setup configuration for ${SETTINGS.d365ApiTenantId}`);
+        if (!Utilities.configurationExists()) {
+            throw Error(`Setup incomplete (validate values for ${SETTINGS.d365ApiClientId} and ${SETTINGS.d365ApiTenantId})`);
         }
         const authConfig = {
             auth: {
-                clientId: vscode.workspace.getConfiguration(SETTINGS.key).get(SETTINGS.d365ApiClientId) as string,
-                authority: `${AUTHORITY_BASE}/${vscode.workspace.getConfiguration(SETTINGS.key).get(SETTINGS.d365ApiTenantId) as string}`
+                clientId: Utilities.getConfigurationValue(SETTINGS.d365ApiClientId) as string,
+                authority: `${AUTHORITY_BASE}/${Utilities.getConfigurationValue(SETTINGS.d365ApiTenantId) as string}`
             },
             //cache: {
             //    cachePlugin: CachePlugin

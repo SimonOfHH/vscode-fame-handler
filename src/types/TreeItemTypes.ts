@@ -162,8 +162,10 @@ export class FameAppVersionTreeItem extends FameTreeItem {
         public readonly description?: string
     ) {
         super(label, collapsibleState, appItem);
-        this.label = this.formatVersionNumber(appVersionItem);
-        this.description = appVersionItem.availability;
+        if (appVersionItem.appId) {
+            this.label = this.formatVersionNumber(appVersionItem);
+            this.description = appVersionItem.availability;
+        }
     }
     iconPath = new vscode.ThemeIcon('symbol-field');
     contextValue = 'countryVersion';
@@ -212,7 +214,7 @@ export class FameAppEnvironmentTreeItem extends FameTreeItem {
     iconPath = new vscode.ThemeIcon('database');
     contextValue = 'environment';
 }
-export class FameAppEnvironmentSubEntityTreeItem extends FameAppEnvironmentTreeItem{
+export class FameAppEnvironmentSubEntityTreeItem extends FameAppEnvironmentTreeItem {
     constructor(
         public readonly label: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
@@ -243,8 +245,10 @@ export class FameAppEnvironmentHotfixTreeItem extends FameTreeItem {
         public readonly description?: string
     ) {
         super(label, collapsibleState, appItem);
-        this.description = appHotfix.targetAppVersion;
-        this.tooltip = `${appHotfix.targetAppVersion}: ${appHotfix.status}`;
+        if (appHotfix) {
+            this.description = appHotfix.targetAppVersion;
+            this.tooltip = `${appHotfix.targetAppVersion}: ${appHotfix.status}`;
+        }
         if (showPlaceholder() === true) {
             this.description = "<Hotfix Placeholder>";
             this.tooltip = "<Hotfix Status Placeholder>";

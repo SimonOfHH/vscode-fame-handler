@@ -59,8 +59,8 @@ The following overview lists the state of features of the [App Management API](h
 * **Environment**
     * [X] List environments (GET)
 * **Environment Hotfix**
-    * [ ] List environment hotfixes (GET)
-    * [ ] Get environment hotfix (GET)
+    * [x] List environment hotfixes (GET)
+    * [x] Get environment hotfix (GET)
     * [ ] Schedule environment hotfix (POST)
     * [ ] Update environment hotfix (PATCH)
 

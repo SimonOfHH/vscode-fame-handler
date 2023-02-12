@@ -30,6 +30,9 @@ export const COMMAND_NAME = {
     statusBarUpdateCommand: getCommandName("statusBarUpdateCommand"),
     downloadAppVersionCommand: getCommandName("downloadAppVersionCommand"),
     inspectAppVersionNavxCommand: getCommandName("inspectAppVersionNavxCommand"),
+    scheduleEnvironmentHotfixFromEnvironmentCommand: getCommandName("scheduleEnvironmentHotfixFromEnvironmentCommand"),
+    scheduleEnvironmentHotfixFromVersionCommand: getCommandName("scheduleEnvironmentHotfixFromVersionCommand"),
+    updateEnvironmentHotfixCommand: getCommandName("updateEnvironmentHotfixCommand"),
     testUserCommand: getCommandName("testUserCommand")
 };
 export const VIEWS = {

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { COMMAND_NAME, EXTENSION_ID } from './constants';
 import { DetailsViewProvider, FameTreeProvider, CommandProvider } from './providers';
-import { FameAppCountrySubEntityVersionsTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppTreeItem, FameAppVersionTreeItem } from './types';
+import { FameAppCountrySubEntityVersionsTreeItem, FameAppEnvironmentHotfixTreeItem, FameAppEnvironmentTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppTreeItem, FameAppVersionTreeItem } from './types';
 
 let tokenInfoStatusBarItem: vscode.StatusBarItem;
 
@@ -26,6 +26,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.updateAppPrincipalCommand}`, (entityPrincipalItem: FameAppPrincipalTreeItem) => cmdProvider.updateAppPrincipalCommand(entityPrincipalItem)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.removeAppPrincipalCommand}`, (entityPrincipalItem: FameAppPrincipalTreeItem) => cmdProvider.removeAppPrincipalCommand(entityPrincipalItem)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.validateManifestCommand}`, () => cmdProvider.validateManifestCommand()));
+	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.scheduleEnvironmentHotfixFromEnvironmentCommand}`, (environmentItem : FameAppEnvironmentTreeItem) => cmdProvider.scheduleEnvironmentHotfixFromEnvironmentCommand(environmentItem)));
+	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.scheduleEnvironmentHotfixFromVersionCommand}`, (version: FameAppVersionTreeItem) => cmdProvider.scheduleEnvironmentHotfixFromVersionCommand(version)));
+	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.updateEnvironmentHotfixCommand}`, (environmentHotfixItem : FameAppEnvironmentHotfixTreeItem) => cmdProvider.updateEnvironmentHotfixCommand(environmentHotfixItem)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.statusBarUpdateCommand}`, () => cmdProvider.statusBarUpdateCommand(tokenInfoStatusBarItem)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.testUserCommand}`, () => cmdProvider.testUserCommand()));
 

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { COMMAND_NAME, VIEWS } from '../constants';
 import { CommandProvider } from '../providers';
-import { FameAppCountrySubEntityEnvironmentsTreeItem, FameAppCountrySubEntityTreeItem, FameAppCountrySubEntityVersionsTreeItem, FameAppCountryTreeItem, FameAppEnvironmentHotfixTreeItem, FameAppEnvironmentSubEntityTreeItem, FameAppEnvironmentTenantTreeItem, FameAppEnvironmentTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityCountriesTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppSubEntityTreeItem, FameAppTreeItem, FameAppVersionTreeItem, FameTreeItem, IFameApp, IFameAppCountry, IFameAppEnvironment, IFameAppEnvironmentHotifx } from '../types';
+import { FameAppCountrySubEntityEnvironmentsTreeItem, FameAppCountrySubEntityTreeItem, FameAppCountrySubEntityVersionsTreeItem, FameAppCountryTreeItem, FameAppEnvironmentHotfixTreeItem, FameAppEnvironmentSubEntityTreeItem, FameAppEnvironmentTenantTreeItem, FameAppEnvironmentTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityCountriesTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppSubEntityTreeItem, FameAppTreeItem, FameAppVersionTreeItem, FameTreeItem, IFameApp, IFameAppCountry, IFameAppEnvironment, IFameAppEnvironmentHotifx, IFameAppVersion } from '../types';
 import { ApiType, Utilities } from '../utils';
 
 export class FameTreeProvider {
@@ -164,13 +164,19 @@ export class FameTreeProvider {
         for (const [i, entry] of apiResponse.entries()) {
             treeItems.push(new FameAppVersionTreeItem("Version", vscode.TreeItemCollapsibleState.None, element?.appItem as IFameApp, entry, element?.appCountry as IFameAppCountry));
         }
+        if (treeItems.length === 0) {
+            treeItems.push(new FameAppVersionTreeItem("<Empty>", vscode.TreeItemCollapsibleState.None, element?.appItem as IFameApp, {} as IFameAppVersion, element?.appCountry as IFameAppCountry));
+        }
         return treeItems;
     }
     private async getEnvironmentTenantsForAppCountry(element?: FameAppCountrySubEntityTreeItem): Promise<FameAppEnvironmentTenantTreeItem[]> {
         let apiResponse = await this.cmdProvider.apiProvider.getEnvironmentsForAppAsMap(element?.appId as string, element?.appCountry.countryCode as string, true);
         let treeItems = new Array<FameAppEnvironmentTenantTreeItem>;
         for (const [i, entry] of apiResponse.entries()) {
-            treeItems.push(new FameAppEnvironmentTenantTreeItem(`Tenant: ${entry.aadTenantId}`, vscode.TreeItemCollapsibleState.Collapsed, element?.appItem as IFameApp, entry, element?.appCountry as IFameAppEnvironment));
+            treeItems.push(new FameAppEnvironmentTenantTreeItem(`Tenant: ${entry.aadTenantId}`, vscode.TreeItemCollapsibleState.Collapsed, element?.appItem as IFameApp, entry, element?.appCountry as IFameAppCountry));
+        }
+        if (treeItems.length === 0) {
+            treeItems.push(new FameAppEnvironmentTenantTreeItem("<Empty>", vscode.TreeItemCollapsibleState.None, element?.appItem as IFameApp, {} as IFameAppEnvironment, element?.appCountry as IFameAppCountry));
         }
         return treeItems;
     }
@@ -192,6 +198,9 @@ export class FameTreeProvider {
         let treeItems = new Array<FameAppEnvironmentHotfixTreeItem>;
         for (const [i, entry] of apiResponse.entries()) {
             treeItems.push(new FameAppEnvironmentHotfixTreeItem(entry.id, vscode.TreeItemCollapsibleState.None, element?.appItem as IFameApp, element?.appEnvironment as IFameAppEnvironment, element?.appCountry as IFameAppCountry, entry as IFameAppEnvironmentHotifx));
+        }
+        if (treeItems.length === 0) {
+            treeItems.push(new FameAppEnvironmentHotfixTreeItem("<Empty>", vscode.TreeItemCollapsibleState.None, element?.appItem as IFameApp, element?.appEnvironment as IFameAppEnvironment, element?.appCountry as IFameAppCountry, {} as IFameAppEnvironmentHotifx));
         }
         return treeItems;
     }

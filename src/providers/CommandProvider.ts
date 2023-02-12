@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME, SETTINGS } from '../constants';
 import { ApiProvider, AppVersionDialogueProvider, CacheProvider, FameTreeProvider, PrincipalSelectProvider, ValueProvider } from '../providers';
-import { FameAppTreeItem, FameAppVersionTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppCountrySubEntityVersionsTreeItem } from '../types';
+import { FameAppTreeItem, FameAppVersionTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppCountrySubEntityVersionsTreeItem, FameAppEnvironmentTreeItem, FameAppEnvironmentHotfixTreeItem } from '../types';
 import { IFameApp } from '../types/FameTypes';
 import { ApiType, ManifestHelper, NavxHelper, Utilities } from '../utils';
 
@@ -221,6 +221,18 @@ export class CommandProvider {
                 vscode.window.showTextDocument(doc);
             });
         }
+    };
+    public scheduleEnvironmentHotfixFromEnvironmentCommand = async (environmentItem: FameAppEnvironmentTreeItem) => {
+        // TODO: Implement
+        vscode.window.showInformationMessage(`TODO: Implement scheduleEnvironmentHotfixFromEnvironmentCommand`);
+    };
+    public scheduleEnvironmentHotfixFromVersionCommand = async (version: FameAppVersionTreeItem) => {
+        // TODO: Implement
+        vscode.window.showInformationMessage(`TODO: Implement scheduleEnvironmentHotfixFromVersionCommand`);
+    };
+    public updateEnvironmentHotfixCommand = async (version: FameAppEnvironmentHotfixTreeItem) => {
+        // TODO: Implement
+        vscode.window.showInformationMessage(`TODO: Implement updateEnvironmentHotfixCommand`);
     };
     public testUserCommand = async () => {
         // TODO: Implement

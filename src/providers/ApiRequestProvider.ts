@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { CacheProvider } from '../providers';
-import { IFameApp, IFameAppArray, IFameAppCountry, IFameAppCountryArray, IFameAppEnvironment, IFameAppEnvironmentArray, IFameAppPrincipal, IFameAppPrincipalArray, IFameAppVersion, IFameAppVersionArray, IGraphUser, IGraphUserArray } from '../types';
+import { IFameApp, IFameAppArray, IFameAppCountry, IFameAppCountryArray, IFameAppEnvironment, IFameAppEnvironmentArray, IFameAppEnvironmentHotifx, IFameAppEnvironmentHotifxArray, IFameAppPrincipal, IFameAppPrincipalArray, IFameAppVersion, IFameAppVersionArray, IGraphUser, IGraphUserArray } from '../types';
 import { ApiProviderHelper, ApiType } from "../utils";
 
 class ApiRequestProvider {
@@ -14,6 +14,7 @@ class ApiRequestProvider {
     }
     protected async get<T>(url: string): Promise<T> {
         await ApiProviderHelper.configureAxiosInstance(this.cache, this.apiType);
+        console.log(url);
         return axios.get<T>(url).then(this.responseBody);
     }
     protected async post<T>(url: string, body: {}): Promise<T> {
@@ -121,6 +122,28 @@ export class AppEnvironmentRequestProvider extends ApiRequestProvider {
     }
     public async details(appId: string, countryCode: string, id: string): Promise<IFameAppEnvironment> {
         return this.get<IFameAppEnvironment>(`/${appId}/countries/${countryCode}/environments/${id}`);
+    }
+}
+export class AppEnvironmentHotfixRequestProvider extends ApiRequestProvider {
+    constructor(cache: CacheProvider) {
+        super(ApiType.D365, cache);
+    }
+    public async list(appId: string, countryCode: string): Promise<IFameAppEnvironmentHotifxArray> {
+        return this.get<IFameAppEnvironmentHotifxArray>(`/${appId}/countries/${countryCode}/environmentHotfixes`);
+    }
+    public async listFiltered(appId: string, countryCode: string, filter: string): Promise<IFameAppEnvironmentHotifxArray> {
+        return this.get<IFameAppEnvironmentHotifxArray>(`/${appId}/countries/${countryCode}/environmentHotfixes?&filter=${filter}`);
+    }
+    public async details(appId: string, countryCode: string, id: string): Promise<IFameAppEnvironmentHotifx> {
+        return this.get<IFameAppEnvironmentHotifx>(`/${appId}/countries/${countryCode}/environmentHotfixes/${id}`);
+    }
+    public async schedule(appId: string, countryCode: string, body: {}): Promise<IFameAppEnvironmentHotifx> {
+        // TODO: Validate body here?
+        return this.postPlaceholder<IFameAppEnvironmentHotifx>(`/${appId}/countries/${countryCode}/environmentHotfixes`, body); // TODO: Activate
+    }
+    public async update(appId: string, countryCode: string, id: string, body: {}): Promise<IFameAppEnvironmentHotifx> {
+        // TODO: Validate body here?
+        return this.patchPlaceholder<IFameAppEnvironmentHotifx>(`/${appId}/countries/${countryCode}/environmentHotfixes/${id}`, body); // TODO: Activate
     }
 }
 export class UserRequestProvider extends ApiRequestProvider {

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME, SETTINGS } from '../constants';
-import { ApiProvider, AppVersionDialogueProvider, CacheProvider, FameTreeProvider, PrincipalSelectProvider, ValueProvider } from '../providers';
+import { ApiProvider, AppVersionDialogueProvider, CacheProvider, FameTreeProvider, SortingType, PrincipalSelectProvider, ValueProvider } from '../providers';
 import { FameAppTreeItem, FameAppVersionTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppCountrySubEntityVersionsTreeItem, FameAppEnvironmentTreeItem, FameAppEnvironmentHotfixTreeItem } from '../types';
 import { IFameApp } from '../types/FameTypes';
 import { ApiType, ManifestHelper, NavxHelper, Utilities } from '../utils';
@@ -233,6 +233,15 @@ export class CommandProvider {
     public updateEnvironmentHotfixCommand = async (version: FameAppEnvironmentHotfixTreeItem) => {
         // TODO: Implement
         vscode.window.showInformationMessage(`TODO: Implement updateEnvironmentHotfixCommand`);
+    };
+    public sortAppsByOriginalOrderCommand = async () => {
+        this.currTreeProvider.sort(SortingType.byOriginalOrder);
+    };
+    public sortAppsByIdCommand = async () => {
+        this.currTreeProvider.sort(SortingType.byId);
+    };
+    public sortAppsByNameCommand = async () => {
+        this.currTreeProvider.sort(SortingType.byName);
     };
     public testUserCommand = async () => {
         // TODO: Implement

@@ -19,6 +19,7 @@ export class FameAppTreeItem extends FameTreeItem {
         public readonly label: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
         public readonly appItem: IFameApp,
+        public readonly orderNo: number,
         public readonly command?: vscode.Command,
     ) {
         super(label, collapsibleState, appItem);

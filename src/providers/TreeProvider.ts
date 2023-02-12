@@ -8,8 +8,10 @@ export class FameTreeProvider {
     private _onDidChangeTreeData: vscode.EventEmitter<FameAppTreeItem | FameTreeItem | undefined | void> = new vscode.EventEmitter<FameAppTreeItem | FameTreeItem | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<FameAppTreeItem | FameTreeItem | undefined | void> = this._onDidChangeTreeData.event;
     private cmdProvider: CommandProvider;
+    private sorting: SortingType;
     constructor(cmdProvider: CommandProvider) {
         this.cmdProvider = cmdProvider;
+        this.sorting = SortingType.byOriginalOrder;
     }
 
     refresh(): void {
@@ -17,6 +19,11 @@ export class FameTreeProvider {
     }
     getTreeItem(element: FameAppTreeItem): vscode.TreeItem {
         return element;
+    }
+    sort(by: SortingType) {
+        if (by === this.sorting) { return; }
+        this.sorting = by;
+        this.refresh();
     }
     private async isConfigured(element?: vscode.TreeItem): Promise<boolean> {
         if (Utilities.configurationExists() === false) {
@@ -122,12 +129,31 @@ export class FameTreeProvider {
         context.subscriptions.push(tree);
         this.cmdProvider.setTreeViewProvider(this);
     }
+    private sortAppTreeItems(treeItems: FameAppTreeItem[]) {
+        const canSortByName = (treeItems.find((item) => !item.appItem.name) ? false : true);
+        switch (this.sorting) {
+            case SortingType.byOriginalOrder:
+                treeItems.sort((a, b) => a.orderNo - b.orderNo);
+                break;
+            case SortingType.byId:
+                treeItems.sort((a, b) => a.appItem.id.localeCompare(b.appItem.id));
+                break;
+            case SortingType.byName:
+                if (!canSortByName) {
+                    vscode.window.showInformationMessage("Names need to be loaded to be able to sort by name.");
+                    break;
+                }
+                treeItems.sort((a, b) => a.appItem.name.localeCompare(b.appItem.name));
+                break;
+        }
+    }
     private async getApps(): Promise<FameAppTreeItem[]> {
         let apiResponse = await this.cmdProvider.apiProvider.getApps(false);
         let treeItems = new Array<FameAppTreeItem>;
         for (const [i, entry] of apiResponse.entries()) {
-            treeItems.push(new FameAppTreeItem("App", vscode.TreeItemCollapsibleState.Collapsed, entry));
+            treeItems.push(new FameAppTreeItem("App", vscode.TreeItemCollapsibleState.Collapsed, entry, i));
         }
+        this.sortAppTreeItems(treeItems);
         return treeItems;
     }
     private async getAppsSubEntities(element?: FameAppTreeItem): Promise<FameAppSubEntityTreeItem[]> {
@@ -204,4 +230,9 @@ export class FameTreeProvider {
         }
         return treeItems;
     }
+}
+export enum SortingType {
+    byName,
+    byId,
+    byOriginalOrder
 }

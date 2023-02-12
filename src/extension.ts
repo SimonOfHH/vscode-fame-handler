@@ -33,7 +33,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.sortAppsByIdCommand}`, () => cmdProvider.sortAppsByIdCommand()));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.sortAppsByNameCommand}`, () => cmdProvider.sortAppsByNameCommand()));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.sortAppsByOriginalOrderCommand}`, () => cmdProvider.sortAppsByOriginalOrderCommand()));
-	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.testUserCommand}`, () => cmdProvider.testUserCommand()));
 
 	// Register Status Bar (updates every second)
 	tokenInfoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);

@@ -60,9 +60,9 @@ The following overview lists the state of features of the [App Management API](h
     * [X] List environments (GET)
 * **Environment Hotfix**
     * [x] List environment hotfixes (GET)
-    * [x] Get environment hotfix (GET)
-    * [ ] Schedule environment hotfix (POST)
-    * [ ] Update environment hotfix (PATCH)
+    * [x] Get environment hotfix (GET) (untested)
+    * [x] Schedule environment hotfix (POST) (untested)
+    * [x] Update environment hotfix (PATCH) (untested)
 
 **Planned / To-Do list**
 * Cover all [App Management API](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/appmanagement/app-management-api) operations
@@ -132,3 +132,7 @@ Users appreciate release notes as you update your extension.
 ### 0.0.1
 
 Initial release of vscode-fame-handler extension
+
+## Disclaimer
+
+This is my first real VS Code Extension. I have no idea if everything is up to best-practices or what could be better. If you see anything that could be improved feel free to leave me a message or create an issue. Much appreciated.

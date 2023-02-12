@@ -34,8 +34,7 @@ export const COMMAND_NAME = {
     inspectAppVersionNavxCommand: getCommandName("inspectAppVersionNavxCommand"),
     scheduleEnvironmentHotfixFromEnvironmentCommand: getCommandName("scheduleEnvironmentHotfixFromEnvironmentCommand"),
     scheduleEnvironmentHotfixFromVersionCommand: getCommandName("scheduleEnvironmentHotfixFromVersionCommand"),
-    updateEnvironmentHotfixCommand: getCommandName("updateEnvironmentHotfixCommand"),
-    testUserCommand: getCommandName("testUserCommand")
+    updateEnvironmentHotfixCommand: getCommandName("updateEnvironmentHotfixCommand")
 };
 export const VIEWS = {
     appsView: getViewName("appsView"),

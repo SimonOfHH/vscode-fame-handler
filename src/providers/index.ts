@@ -1,6 +1,7 @@
 export * from './ApiProvider';
 export * from './ApiRequestProvider';
 export * from './CacheProvider';
+export * from './EnvironmentHotfixDialogueProvider';
 export * from './TreeProvider';
 export * from './ValueProvider';
 export * from './DetailsWebViewProvider';

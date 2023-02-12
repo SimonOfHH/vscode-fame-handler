@@ -107,7 +107,7 @@ export class AppVersionDialogueProvider {
         return answerValue;
     };
 }
-class D365AppVersionItem implements vscode.QuickPickItem {
+export class D365AppVersionItem implements vscode.QuickPickItem {
     label: string;
     description = '';
     detail: string;

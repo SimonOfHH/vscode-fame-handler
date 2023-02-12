@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME, SETTINGS } from '../constants';
-import { ApiProvider, AppVersionDialogueProvider, CacheProvider, FameTreeProvider, SortingType, PrincipalSelectProvider, ValueProvider } from '../providers';
+import { ApiProvider, AppVersionDialogueProvider, CacheProvider, FameTreeProvider, SortingType, PrincipalSelectProvider, ValueProvider, EnvironmentHotfixDialogueProvider } from '../providers';
 import { FameAppTreeItem, FameAppVersionTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppCountrySubEntityVersionsTreeItem, FameAppEnvironmentTreeItem, FameAppEnvironmentHotfixTreeItem } from '../types';
-import { IFameApp } from '../types/FameTypes';
+import { IFameApp, IFameAppEnvironment, IFameAppVersion } from '../types/FameTypes';
 import { ApiType, ManifestHelper, NavxHelper, Utilities } from '../utils';
 
 export class CommandProvider {
@@ -223,16 +223,61 @@ export class CommandProvider {
         }
     };
     public scheduleEnvironmentHotfixFromEnvironmentCommand = async (environmentItem: FameAppEnvironmentTreeItem) => {
-        // TODO: Implement
-        vscode.window.showInformationMessage(`TODO: Implement scheduleEnvironmentHotfixFromEnvironmentCommand`);
+        const version = await EnvironmentHotfixDialogueProvider.selectAppVersionToSchedule(this.apiProvider, environmentItem, environmentItem.appCountry.countryCode);
+        if (!version) { return; }
+        const date = await EnvironmentHotfixDialogueProvider.selectDate();
+        if (!date) { return; }
+        if (date < new Date()) {
+            vscode.window.showErrorMessage("Date needs to be in the future.");
+            return;
+        }
+        // TODO: Validate that it's an allowed version
+        await this.scheduleEnvironmentHotfix(version, environmentItem.appEnvironment, date);
     };
     public scheduleEnvironmentHotfixFromVersionCommand = async (version: FameAppVersionTreeItem) => {
-        // TODO: Implement
-        vscode.window.showInformationMessage(`TODO: Implement scheduleEnvironmentHotfixFromVersionCommand`);
+        const environment = await EnvironmentHotfixDialogueProvider.selectAppEnvironmentToSchedule(this.apiProvider, version, version.appCountry.countryCode);
+        if (!environment) { return; }
+        const date = await EnvironmentHotfixDialogueProvider.selectDate();
+        if (!date) { return; }
+        if (date < new Date()) {
+            vscode.window.showErrorMessage("Date needs to be in the future.");
+            return;
+        }
+        // TODO: Validate that it's an allowed version
+        await this.scheduleEnvironmentHotfix(version.appVersionItem, environment, date);
     };
-    public updateEnvironmentHotfixCommand = async (version: FameAppEnvironmentHotfixTreeItem) => {
-        // TODO: Implement
-        vscode.window.showInformationMessage(`TODO: Implement updateEnvironmentHotfixCommand`);
+    public scheduleEnvironmentHotfix = async (version: IFameAppVersion, environment: IFameAppEnvironment, date: Date) => {
+        await vscode.window.showWarningMessage(`Are you sure that you want to schedule version "${version.version}" as hotfix for environment "${environment.name}" in Tenant "${environment.aadTenantId}" for ${date.toISOString()}?"`, "Yes", "No").
+            then(async (answer) => {
+                if (answer === "Yes") {
+                    const body = EnvironmentHotfixDialogueProvider.constructBody(environment, version, date);
+                    const result = await this.apiProvider.scheduleEnvironmentHotfixForApp(version.appId, environment.countryCode, body);
+                    vscode.window.showInformationMessage(`Scheduled version "${version.version}" as hotfix for environment "${environment.name}" in Tenant "${environment.aadTenantId}" for ${date.toISOString()}`);
+                    this.currTreeProvider.refresh();
+                }
+            });
+    };
+    public updateEnvironmentHotfixCommand = async (hotfixItem: FameAppEnvironmentHotfixTreeItem) => {
+        if (await this.checkSignedIn() === false) { return; }
+        const inputSelection = await EnvironmentHotfixDialogueProvider.selectUpdateOption();
+        console.log(inputSelection);
+        if ((!inputSelection) || (inputSelection.length === 0)) { return; }
+        switch (inputSelection) {
+            // Right now only cancelling is supported by the API; will extend when the API is being extended
+            case "Cancel scheduled Hotfix":
+                await vscode.window.showWarningMessage(`Are you sure that you want to cancel the scheduled hotfix?`, "Yes", "No").
+                    then(async (answer) => {
+                        if (answer === "Yes") {
+                            const body = {
+                                status: "Canceled"
+                            };
+                            await this.apiProvider.updateEnvironmentHotfixForApp(hotfixItem.appItem.id, hotfixItem.appCountry.countryCode, hotfixItem.appHotfix.id, body);
+                            vscode.window.showInformationMessage(`Cancelled scheduled hotfix`);
+                            this.currTreeProvider.refresh();
+                        }
+                    });
+                break;
+        }
     };
     public sortAppsByOriginalOrderCommand = async () => {
         this.currTreeProvider.sort(SortingType.byOriginalOrder);
@@ -242,11 +287,6 @@ export class CommandProvider {
     };
     public sortAppsByNameCommand = async () => {
         this.currTreeProvider.sort(SortingType.byName);
-    };
-    public testUserCommand = async () => {
-        // TODO: Implement
-        // just for testing
-        vscode.window.showInformationMessage(`TODO: Implement testUserCommand`);
     };
     public setTreeViewProvider = (provider: FameTreeProvider) => {
         this.currTreeProvider = provider;

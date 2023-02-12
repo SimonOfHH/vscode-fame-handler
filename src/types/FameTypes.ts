@@ -13,6 +13,9 @@ export interface IFameAppVersionArray {
 export interface IFameAppEnvironmentArray {
     value: IFameAppEnvironment[]
 }
+export interface IFameAppEnvironmentHotifxArray {
+    value: IFameAppEnvironmentHotifx[]
+}
 export interface IFameApp {
     id: string,
     publisher: string,
@@ -62,4 +65,21 @@ export interface IFameAppEnvironment {
     locationName: string,
     name: string,
     type: string
+}
+export interface IFameAppEnvironmentHotifx {
+    appId: string,
+    completedOn: Date, // date-time
+    countryCode: string,
+    createdOn: Date, // date-time
+    environmentAadTenantId: string,
+    environmentApplicationFamily: string,
+    environmentName: string,
+    errorMessage: string,
+    id: string,
+    ignoreUpgradeWindow: boolean,
+    runAfter: Date, // date-time
+    sourceAppVersion: string,
+    startedOn: Date, // date-time
+    status: string, // enum
+    targetAppVersion: string
 }

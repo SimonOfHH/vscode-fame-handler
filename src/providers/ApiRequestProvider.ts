@@ -22,6 +22,10 @@ class ApiRequestProvider {
         await ApiProviderHelper.configureAxiosInstance(this.cache, this.apiType);
         return axios.post<T>(url, body).then(this.responseBody);
     }
+    protected async post1<T>(url: string, body: {}): Promise<T> {
+        await ApiProviderHelper.configureAxiosInstance(this.cache, this.apiType);
+        return axios.post<T>(url, body).then(this.responseBody);
+    }
     protected async postPlaceholder<T>(url: string, body: {}): Promise<T> {
         await ApiProviderHelper.configureAxiosInstance(this.cache, this.apiType);
         console.log(`POST url: ${url}; body: ${body}`);
@@ -101,7 +105,7 @@ export class AppVersionRequestProvider extends ApiRequestProvider {
         return this.get<IFameAppVersion>(`/${appId}/countries/${countryCode}/versions/${version}`);
     }
     public async add(appId: string, countryCode: string, body: {}): Promise<IFameAppVersion> {
-        return this.post<IFameAppVersion>(`/${appId}/countries/${countryCode}/versions`, body);
+        return this.post1<IFameAppVersion>(`/${appId}/countries/${countryCode}/versions`, body);
     }
     public async update(appId: string, countryCode: string, version: string, body: {}): Promise<IFameAppVersion> {
         return this.patchPlaceholder<IFameAppVersion>(`/${appId}/countries/${countryCode}/versions/${version}`, body);

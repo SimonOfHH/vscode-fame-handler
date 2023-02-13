@@ -295,7 +295,7 @@ export class ApiProvider {
         }
         let tempVersions: IFameAppVersion[] = [];
         apps:
-        for (const [i, app] of cachedApps.entries()) {
+        for (const [i, app] of cachedApps.filter((element) => !element.name).entries()) {
             const countries = await this.getCountriesForApp(app.id);
             countries:
             for (const [i, country] of countries.entries()) {

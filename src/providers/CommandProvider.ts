@@ -121,6 +121,12 @@ export class CommandProvider {
                 // TODO: Test this
                 await this.apiProvider.updateAppVersion(version.appItem.id, version.appCountry.countryCode, version.appVersionItem.version, undefined, result[0], result[1]);
                 break;
+            case "SyncMode":
+                const newSyncMode = await AppVersionDialogueProvider.selectSyncMode();
+                if ((!newSyncMode) || (newSyncMode.length === 0)) { return; }
+                // TODO: Test this
+                await this.apiProvider.updateAppVersion(version.appItem.id, version.appCountry.countryCode, version.appVersionItem.version, undefined, undefined, undefined, newSyncMode);
+                break;
         }
         this.currTreeProvider.refresh();
     };

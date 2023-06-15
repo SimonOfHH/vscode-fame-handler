@@ -4,7 +4,7 @@ import { FameAppVersionTreeItem, IFameAppDependency, IFameAppVersion } from '../
 
 export class AppVersionDialogueProvider {
     public static selectWhatToUpdate = async (): Promise<string | undefined> => {
-        const type = await vscode.window.showQuickPick(["Availability", "Set Dependency Compatibility"], {
+        const type = await vscode.window.showQuickPick(["Availability", "Set Dependency Compatibility", "SyncMode"], {
             placeHolder: '...',
             title: 'What do you want to update?',
             canPickMany: false
@@ -16,6 +16,15 @@ export class AppVersionDialogueProvider {
         const type = await vscode.window.showQuickPick(["Preview", "Available", "Deprecated"], {
             placeHolder: '...',
             title: 'Select Availability',
+            canPickMany: false
+        });
+        if (!type) { return undefined; }
+        return type;
+    };
+    public static selectSyncMode = async (): Promise<string | undefined> => {
+        const type = await vscode.window.showQuickPick(["Sync", "ForceSync"], {
+            placeHolder: '...',
+            title: 'Select SyncMode',
             canPickMany: false
         });
         if (!type) { return undefined; }

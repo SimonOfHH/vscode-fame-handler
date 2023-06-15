@@ -99,7 +99,7 @@ export class AppVersionRequestProvider extends ApiRequestProvider {
         super(ApiType.D365, cache);
     }
     public async list(appId: string, countryCode: string, filter?: string): Promise<IFameAppVersionArray> {
-        return this.get<IFameAppVersionArray>(`/${appId}/countries/${countryCode}/versions${(filter) ? `?filter=${filter}` : ""}`);
+        return this.get<IFameAppVersionArray>(`/${appId}/countries/${countryCode}/versions${(filter) ? `?$filter=${filter}` : ""}`);
     }
     public async details(appId: string, countryCode: string, version: string): Promise<IFameAppVersion> {
         return this.get<IFameAppVersion>(`/${appId}/countries/${countryCode}/versions/${version}`);
@@ -108,7 +108,7 @@ export class AppVersionRequestProvider extends ApiRequestProvider {
         return this.post1<IFameAppVersion>(`/${appId}/countries/${countryCode}/versions`, body);
     }
     public async update(appId: string, countryCode: string, version: string, body: {}): Promise<IFameAppVersion> {
-        return this.patchPlaceholder<IFameAppVersion>(`/${appId}/countries/${countryCode}/versions/${version}`, body);
+        return this.patch<IFameAppVersion>(`/${appId}/countries/${countryCode}/versions/${version}`, body);
     }
     public async download(appId: string, countryCode: string, version: string): Promise<IFameAppVersion> {
         return this.postStreamResponse<IFameAppVersion>(`/${appId}/countries/${countryCode}/versions/${version}/getPackageContents`);

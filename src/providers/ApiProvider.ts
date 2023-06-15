@@ -1,5 +1,6 @@
 import { PublicClientApplication } from "@azure/msal-node";
 import { AxiosError } from "axios";
+import { sync } from "glob";
 import { ExtensionContext } from 'vscode';
 import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME } from '../constants';
 import { AppCountryRequestProvider, AppEnvironmentHotfixRequestProvider, AppEnvironmentRequestProvider, AppPrincipalRequestProvider, AppRequestProvider, AppVersionRequestProvider, CacheProvider, CommandProvider, UserRequestProvider, ValueProvider } from '../providers';
@@ -155,7 +156,8 @@ export class ApiProvider {
     //#endregion (D365) Principal requests
     //#region (D365) Version requests
     public async getVersionsForApp(appId: string, countryCode: string, updateCache: boolean, filter?: string): Promise<IFameAppVersion[]> {
-        let resultArray = await (await this.appVersionRequestProvider.list(appId, countryCode)).value;
+        //let resultArray = await (await this.appVersionRequestProvider.list(appId, countryCode, filter)).value;
+        let resultArray = (await (this.appVersionRequestProvider.list(appId, countryCode, filter))).value;
         console.log(resultArray);
         if (updateCache === true) {
             await this.updateCachedApps(resultArray);
@@ -175,11 +177,17 @@ export class ApiProvider {
         let response = await this.appVersionRequestProvider.add(appId, countryCode, body);
         console.log(response);
     }
-    public async updateAppVersion(appId: string, countryCode: string, version: string, newAvailability?: string, dependencyAppId?: string, incompatibleFromVersion?: string) {
+    public async updateAppVersion(appId: string, countryCode: string, version: string, newAvailability?: string, dependencyAppId?: string, incompatibleFromVersion?: string, newSyncMode?: string) {
         if (newAvailability) {
             const allowedValues = ["Available", "Preview", "Deprecated"];
             if (!allowedValues.includes(newAvailability)) {
                 throw Error("Not allowed value for 'Availability'");
+            }
+        }
+        if (newSyncMode) {
+            const allowedValues = ["Sync", "ForceSync"];
+            if (!allowedValues.includes(newSyncMode)) {
+                throw Error("Not allowed value for 'SyncMode'");
             }
         }
         let body = {};
@@ -192,6 +200,11 @@ export class ApiProvider {
             body = {
                 appId: dependencyAppId,
                 incompatibleFromVersion: incompatibleFromVersion
+            };
+        }
+        if (newSyncMode) {
+            body = {
+                syncMode: newSyncMode
             };
         }
         if (!body) {

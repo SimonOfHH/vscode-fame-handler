@@ -72,7 +72,7 @@ export class ManifestHelper {
     }
     private static async validateAppEntry(entryId: number, countryCode: string, appEntry: IManifestAppEntry, apiProvider: ApiProvider): Promise<string[] | undefined> {
         let problems: string[] = [];
-        const identifier = `id=${appEntry.id}, name=${appEntry.name}`;
+        const identifier = `id=${appEntry.id}, name=${appEntry.name}, version=${appEntry.initialVersion}`;
         if (!appEntry.id) {
             problems.push(`"appId" is missing (${identifier})`);
         }
@@ -93,7 +93,7 @@ export class ManifestHelper {
             if (!filter) { problems.push(`"Couldn't parse version (${identifier})`); }
             try {
                 const result = await apiProvider.getVersionsForApp(appEntry.id, countryCode, false, filter);
-                if (!result) { problems.push(`"Couldn't find version in FAME repository (${identifier})`); }
+                if ((!result) || (result.length === 0)) { problems.push(`"Couldn't find version in FAME repository (${identifier})`); }
             } catch {
                 problems.push(`"Couldn't find version in FAME repository (HTTP error) (${identifier})`);
             }

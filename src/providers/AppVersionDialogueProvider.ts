@@ -21,6 +21,15 @@ export class AppVersionDialogueProvider {
         if (!type) { return undefined; }
         return type;
     };
+    public static selectCountryCode = async (): Promise<string | undefined> => {
+        const type = await vscode.window.showQuickPick(["NL", "DE", "FR", "GB", "BE"], { // TODO: make config
+            placeHolder: '...',
+            title: 'Select Country',
+            canPickMany: false
+        });
+        if (!type) { return undefined; }
+        return type;
+    };
     public static selectSyncMode = async (): Promise<string | undefined> => {
         const type = await vscode.window.showQuickPick(["Sync", "ForceSync"], {
             placeHolder: '...',

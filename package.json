@@ -3,7 +3,8 @@
   "displayName": "FAME Handler",
   "publisher": "SimonOfHH",
   "description": "An Extension to make working with the App Management APIs for Microsofts Embed App program easier and to give it an UI (LCS/FAME repository).",
-  "version": "0.0.1",
+  "icon": "assets/lcs-favicon.png",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -60,6 +61,11 @@
       {
         "command": "famehandler.uploadAppVersionCommand",
         "title": "Upload App Version",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "famehandler.uploadAppsFromDirectoryCommand",
+        "title": "Upload all Apps from directory",
         "icon": "$(cloud-upload)"
       },
       {
@@ -121,6 +127,14 @@
       {
         "command": "famehandler.sortAppsByNameCommand",
         "title": "... by App name"
+      },
+      {
+        "command": "famehandler.createDatabaseExportSasCommand",
+        "title": "FAME: Create database export SAS"
+      },
+      {
+        "command": "famehandler.selectAzureSubscription",
+        "title": "FAME: Select Azure subscription"
       }
     ],
     "viewsContainers": {
@@ -149,7 +163,7 @@
     "viewsWelcome": [
       {
         "view": "famehandler.appsView",
-        "contents": "You need to sign in, before anything can be shown here. Also make sure that settings are correctly configured.\n[Sign in](command:famehandler.signInCommand)"
+        "contents": "You need to sign in, before anything can be shown here. Also make sure that settings are correctly configured.\n[Sign in](command:famehandler.signInCommand)\n[Help](command:famehandler.signInCommand)"
       }
     ],
     "menus": {
@@ -166,6 +180,10 @@
         },
         {
           "command": "famehandler.loadAllAppInfoCommand",
+          "when": "view == famehandler.appsView"
+        },
+        {
+          "command": "famehandler.uploadAppsFromDirectoryCommand",
           "when": "view == famehandler.appsView"
         }
       ],
@@ -247,6 +265,10 @@
         },
         {
           "command": "famehandler.loadAllAppInfoCommand",
+          "when": "false"
+        },
+        {
+          "command": "famehandler.uploadAppsFromDirectoryCommand",
           "when": "false"
         },
         {
@@ -366,6 +388,11 @@
           "type": "boolean",
           "default": false,
           "description": "Used for demos to avoid showing information not meant to be shown"
+        },
+        "famehandler.azureSubscriptionId": {
+          "type": "string",
+          "default": "00000000-0000-0000-0000-000000000000",
+          "description": "Azure subscription id. Used for creating backup URI"
         }
       }
     }
@@ -396,8 +423,14 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
+    "@azure/arm-resources": "^5.2.0",
+    "@azure/arm-storage": "^18.1.0",
+    "@azure/arm-subscriptions": "^5.1.0",
+    "@azure/identity": "^3.2.3",
+    "@azure/identity-vscode": "^1.0.0",
     "@azure/msal-common": "^9.1.1",
     "@azure/msal-node": "^1.14.6",
+    "@azure/storage-blob": "^12.14.0",
     "axios": "^1.2.3",
     "fast-xml-parser": "^4.1.0",
     "node-gzip": "^1.1.2",

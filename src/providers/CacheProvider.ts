@@ -50,7 +50,7 @@ export class CacheProvider {
         if (!this.isExpired(this.cache[version][path].expiration)) {
           return this.cache[version][path];
         } else {
-          this.put(version, path, null);
+          this.put(version, path, undefined);
         }
       }
     } catch (e) {
@@ -71,6 +71,10 @@ export class CacheProvider {
   public async put(version: string, path: string, apiData: any, expiration?: Date) {
     if (typeof expiration === "undefined") {
       // Create expiration date - 5 days
+      expiration = new Date();
+      expiration.setTime(expiration.getTime() + 5 * 24 * 3600000);
+    }
+    if (expiration === undefined) {
       expiration = new Date();
       expiration.setTime(expiration.getTime() + 5 * 24 * 3600000);
     }

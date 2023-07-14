@@ -33,6 +33,13 @@ export class ValueProvider {
         if (!namesMap) { return; }
         return apps.map(entry => { entry.name = (namesMap.get(entry.id) as string); return entry; });
     }
+    public static getAzureSubscriptionId() {
+        const subscriptionId = vscode.workspace.getConfiguration(SETTINGS.key).get<string>(SETTINGS.azureSubscriptionId);
+        if (subscriptionId) {
+            return subscriptionId;
+        }
+        return undefined;
+    }
     public static getDefaultPrincipalsFromConfiguration() {
         const sets = vscode.workspace.getConfiguration(SETTINGS.key).get<IPrincipalSets>(SETTINGS.principalSets);
         if (sets) {

@@ -19,6 +19,7 @@ export const COMMAND_NAME = {
     loadAllAppInfoCommand: getCommandName("loadAllAppInfoCommand"),
     refreshEntryCommand: getCommandName("refreshEntryCommand"),
     uploadAppVersionCommand: getCommandName("uploadAppVersionCommand"),
+    uploadAppsFromDirectoryCommand: getCommandName("uploadAppsFromDirectoryCommand"),
     setDataCommand: getCommandName("setDataCommand"),
     sortAppsByIdCommand: getCommandName("sortAppsByIdCommand"),
     sortAppsByNameCommand: getCommandName("sortAppsByNameCommand"),
@@ -34,7 +35,9 @@ export const COMMAND_NAME = {
     inspectAppVersionNavxCommand: getCommandName("inspectAppVersionNavxCommand"),
     scheduleEnvironmentHotfixFromEnvironmentCommand: getCommandName("scheduleEnvironmentHotfixFromEnvironmentCommand"),
     scheduleEnvironmentHotfixFromVersionCommand: getCommandName("scheduleEnvironmentHotfixFromVersionCommand"),
-    updateEnvironmentHotfixCommand: getCommandName("updateEnvironmentHotfixCommand")
+    updateEnvironmentHotfixCommand: getCommandName("updateEnvironmentHotfixCommand"),
+    createDatabaseExportSasCommand: getCommandName("createDatabaseExportSasCommand"),
+    selectAzureSubscription: getCommandName("selectAzureSubscription")
 };
 export const VIEWS = {
     appsView: getViewName("appsView"),
@@ -46,5 +49,6 @@ export const SETTINGS = {
     d365ApiTenantId: getSettingName("api.tenantId"),
     principalSets: getSettingName("defaults.principalSets"),
     showPlaceholder: getSettingName("showPlaceholder"),
-    countrySelection: getSettingName("defaults.countrySelection")
+    countrySelection: getSettingName("defaults.countrySelection"),
+    azureSubscriptionId: getSettingName("azureSubscriptionId")
 };

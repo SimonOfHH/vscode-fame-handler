@@ -11,8 +11,10 @@ export class NavxHelper {
     private _buffer: Buffer;
     private _asJson: any;
     private _asXML: string;
+    public dependencies: any[];
+    public sourceFilename: string;
 
-    private constructor(input: Buffer) {
+    private constructor(input: Buffer, filename : string) {
         // Handle as Buffer
         this._buffer = input;
         this._asXML = input.toString();
@@ -20,13 +22,17 @@ export class NavxHelper {
             throw Error(`Invalid input`);
         }
         this.parse();
+        this.dependencies = this.getDependencies();        
+        this.sourceFilename = filename;
     }
     public static async async(input: Buffer | string): Promise<NavxHelper> {
         let buf: Buffer = Buffer.from([0]);
+        let sourceFilename = "";
         if (typeof input === "string") {
             if (fs.existsSync(input) === true) {
                 // Handle as filename
                 const filename = input;
+                sourceFilename = filename;
                 let navxFilename: string;
                 if (input.toLowerCase().endsWith(".app")) {
                     buf = fs.readFileSync(input);
@@ -45,7 +51,7 @@ export class NavxHelper {
                 buf = Buffer.from(input);
             }
         }
-        return new NavxHelper(buf);
+        return new NavxHelper(buf, sourceFilename);
     }
     public getAsXml() {
         return this._asXML;
@@ -64,6 +70,18 @@ export class NavxHelper {
     }
     public getAppValue(identifier: string) {
         return this._asJson["Package"]["App"][`@_${identifier}`];
+    }
+    public getDependencies(): any[] {
+        if (!this._asJson) { return []; }
+        if (!this._asJson["Package"]["Dependencies"]) { return []; }
+        if (this._asJson["Package"]["Dependencies"] === "") { return []; }
+        const deps = this._asJson["Package"]["Dependencies"];
+        const dep = deps["Dependency"];
+        if (Array.isArray(dep)) { return dep; }
+        return [dep];
+    }
+    public getValue(identifier: string) {
+        return this._asJson["Package"][`${identifier}`];
     }
     // TODO: Check if other things need to be returned (like IdRanges, InternalsVisibleTo, ...)
     private static checkFileValid(filename: string, buf: Buffer): [boolean, string] {

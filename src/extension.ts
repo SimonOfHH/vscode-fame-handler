@@ -19,6 +19,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.loadAllAppInfoCommand}`, () => cmdProvider.loadAllAppsCommand()));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.assignAppToCountryCommand}`, (app: FameAppTreeItem) => cmdProvider.assignAppToCountryCommand(app)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.uploadAppVersionCommand}`, (version: FameAppCountrySubEntityVersionsTreeItem) => cmdProvider.uploadAppVersionCommand(version)));
+	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.uploadAppsFromDirectoryCommand}`, () => cmdProvider.uploadAppsFromDirectoryCommand()));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.updateVersionCommand}`, (version: FameAppVersionTreeItem) => cmdProvider.updateAppVersionCommand(version)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.downloadAppVersionCommand}`, (version: FameAppVersionTreeItem) => cmdProvider.downloadAppVersionCommand(version)));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.inspectAppVersionNavxCommand}`, (version: FameAppVersionTreeItem) => cmdProvider.inspectAppVersionNavxCommand(version)));
@@ -33,6 +34,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.sortAppsByIdCommand}`, () => cmdProvider.sortAppsByIdCommand()));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.sortAppsByNameCommand}`, () => cmdProvider.sortAppsByNameCommand()));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.sortAppsByOriginalOrderCommand}`, () => cmdProvider.sortAppsByOriginalOrderCommand()));
+	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.createDatabaseExportSasCommand}`, () => cmdProvider.createDatabaseExportSasCommand()));
+	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.selectAzureSubscription}`, () => cmdProvider.selectAzureSubscriptionCommand()));
 
 	// Register Status Bar (updates every second)
 	tokenInfoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);

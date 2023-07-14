@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME, SETTINGS } from '../constants';
-import { ApiProvider, AppVersionDialogueProvider, CacheProvider, FameTreeProvider, SortingType, PrincipalSelectProvider, ValueProvider, EnvironmentHotfixDialogueProvider } from '../providers';
-import { FameAppTreeItem, FameAppVersionTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppCountrySubEntityVersionsTreeItem, FameAppEnvironmentTreeItem, FameAppEnvironmentHotfixTreeItem } from '../types';
+import { ApiProvider, AppVersionDialogueProvider, CacheProvider, EnvironmentHotfixDialogueProvider, FameTreeProvider, PrincipalSelectProvider, SortingType, ValueProvider } from '../providers';
+import { FameAppCountrySubEntityVersionsTreeItem, FameAppEnvironmentHotfixTreeItem, FameAppEnvironmentTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppTreeItem, FameAppVersionTreeItem } from '../types';
 import { IFameApp, IFameAppEnvironment, IFameAppVersion } from '../types/FameTypes';
-import { ApiType, ManifestHelper, NavxHelper, Utilities } from '../utils';
+import { ApiType, AzureUtils, ManifestHelper, NavxHelper, Utilities } from '../utils';
 
 export class CommandProvider {
     public apiProvider: ApiProvider;
@@ -73,6 +73,37 @@ export class CommandProvider {
             await this.apiProvider.collectInformationFromVersions();
         });
         this.currTreeProvider.refresh();
+    };
+    public uploadAppsFromDirectoryCommand = async () => {
+        if (await this.checkSignedIn() === false) { return; }
+        const folder = await Utilities.selectFolderDialog();
+        if (!folder) { return; }
+        // Ask for country        
+        const countryCode = await AppVersionDialogueProvider.selectCountryCode(); 
+        if (!countryCode) { return; }
+        // Get all files
+        const files = await Utilities.getFilesForDirectory(folder);
+        let [appsInfos, idInfos] = await Utilities.getAppMaps(files);
+        // Sort apps by dependencies
+        appsInfos = Utilities.sortMapByNumberOfEntriesInArrayNavX(appsInfos);
+        const appsSorted = Utilities.sortMapByDependencies(appsInfos, idInfos);
+        // Check if all apps can be uploaded
+        await Utilities.validatePreconditionnsBeforeUpload(appsSorted, countryCode, this.apiProvider);
+        // Upload file-by-file
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            cancellable: false,
+            title: `Uploading apps (Country: ${countryCode})`
+        }, async (progress) => {
+            for (const [entry, content] of appsSorted) {
+                const base64content = Utilities.getFileBytesAsBase64(content.sourceFilename);
+                const appId = content.getAppValue("Id");
+                const appName = content.getAppValue("Name");
+                const appVersion = content.getAppValue("Version");
+                progress.report({ message: `${appName}, ${appVersion}` });
+                const response = await this.apiProvider.addNewAppVersion(appId, countryCode, "Available", base64content);
+            }
+        });
     };
     public clearCacheProviderCommand = async () => {
         const cache: CacheProvider = CacheProvider.getInstance(this.currContext, CACHE_NAME);
@@ -297,4 +328,18 @@ export class CommandProvider {
     public setTreeViewProvider = (provider: FameTreeProvider) => {
         this.currTreeProvider = provider;
     };
+    public createDatabaseExportSasCommand = async () => {
+        const sasUrl = await Utilities.generateDatabaseExportInformation();
+        if (sasUrl === undefined) { return; }
+        vscode.env.clipboard.writeText(sasUrl);
+        vscode.window.showInformationMessage(`Added information to clipboard.`);
+    };
+    public selectAzureSubscriptionCommand = async () => {
+        await AzureUtils.selectAzureSubscription();
+    };
+}
+interface CustomObject {
+    appName: string,
+    dependencies: any,
+    filename: string
 }

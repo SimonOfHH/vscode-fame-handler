@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME, SETTINGS } from '../constants';
-import { ApiProvider, AppVersionDialogueProvider, CacheProvider, EnvironmentHotfixDialogueProvider, FameTreeProvider, PrincipalSelectProvider, SortingType, ValueProvider } from '../providers';
+import { ApiProvider, AppVersionDialogueProvider, CacheProvider, EnvironmentHotfixDialogueProvider, FameTreeProvider, LcsBuildProvider, PrincipalSelectProvider, SortingType, ValueProvider } from '../providers';
 import { FameAppCountrySubEntityVersionsTreeItem, FameAppEnvironmentHotfixTreeItem, FameAppEnvironmentTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppTreeItem, FameAppVersionTreeItem } from '../types';
 import { IFameApp, IFameAppEnvironment, IFameAppVersion } from '../types/FameTypes';
-import { ApiType, AzureUtils, ManifestHelper, NavxHelper, Utilities } from '../utils';
+import { ApiProviderHelper, ApiType, AzureUtils, ManifestHelper, NavxHelper, Utilities } from '../utils';
 
 export class CommandProvider {
     public apiProvider: ApiProvider;
@@ -20,7 +20,8 @@ export class CommandProvider {
         this.apiProvider.signIn(ApiType.Graph);
     };
     public statusBarUpdateCommand = async (tokenInfoStatusBarItem: vscode.StatusBarItem) => {
-        tokenInfoStatusBarItem.text = await ValueProvider.getTokenLifetimeFromCache1(CacheProvider.getInstance(this.currContext, CACHE_NAME));
+        //tokenInfoStatusBarItem.text = await ValueProvider.getTokenLifetimeFromCache1(CacheProvider.getInstance(this.currContext, CACHE_NAME));
+        tokenInfoStatusBarItem.text = "deactivated";
         tokenInfoStatusBarItem.show();
     };
     public importAppIdNameMapCommand = async () => {
@@ -67,10 +68,10 @@ export class CommandProvider {
         if (await this.checkSignedIn() === false) { return; }
         await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
-            cancellable: false,
-            title: 'Loading apps'
-        }, async (progress) => {
-            await this.apiProvider.collectInformationFromVersions();
+            cancellable: true,
+            title: 'FAME Loading app metadata'
+        }, async (progress, token) => {
+            await this.apiProvider.collectInformationFromVersions(progress, token);
         });
         this.currTreeProvider.refresh();
     };
@@ -337,9 +338,4 @@ export class CommandProvider {
     public selectAzureSubscriptionCommand = async () => {
         await AzureUtils.selectAzureSubscription();
     };
-}
-interface CustomObject {
-    appName: string,
-    dependencies: any,
-    filename: string
 }

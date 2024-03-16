@@ -1,9 +1,10 @@
 import { AccountInfo, AuthenticationResult, InteractionRequiredAuthError, LogLevel, PublicClientApplication } from "@azure/msal-node";
 import axios from "axios";
 import * as vscode from 'vscode';
-import { AUTHORITY_BASE, CACHE_TOKEND365, CACHE_TOKENGRAPH, D365_APPS_API, GRAPH_API_BASE, SCOPE_D365_APP, SCOPE_GRAPH_USERREADALL, SETTINGS } from '../constants';
-import { CacheProvider, ValueProvider } from "../providers";
-import { IPrincipal } from "../types";
+import open from 'open';
+import { AUTHORITY_BASE, CACHE_TOKEND365, CACHE_TOKENGRAPH, D365_APPS_API, GRAPH_API_BASE, SCOPE_D365_APP, SCOPE_GRAPH_USERREADALL, SETTINGS } from '../constants/index';
+import { CacheProvider, ValueProvider } from "../providers/index";
+import { IPrincipal } from "../types/index";
 import { Utilities } from "./Utilities";
 
 export class ApiProviderHelper {
@@ -48,7 +49,7 @@ export class ApiProviderHelper {
         return options;
     }
     public static async openBrowser(url: string) {
-        let open = require("open");
+        //let open = require("open");
         open(url);
     }
     public static getAuthConfig() {
@@ -108,7 +109,8 @@ export class ApiProviderHelper {
     public static async getTokenFromCache(cache: CacheProvider, throwError: boolean, type: ApiType): Promise<AuthenticationResult | null> {
         let token = await cache.get("v1", ApiProviderHelper.getTokenIdentifier(type)) as AuthenticationResult;
         if (!token && throwError) {
-            throw new Error("You need to sign in first.");
+            //throw new Error("You need to sign in first.");
+            return null;
         }
         if (!ApiProviderHelper.authenticationResultIsValid(token)) {
             ApiProviderHelper.updateAuthenticationResultInCache(cache, null, type);

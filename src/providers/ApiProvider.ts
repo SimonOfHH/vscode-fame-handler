@@ -1,11 +1,12 @@
+import * as vscode from 'vscode';
 import { PublicClientApplication } from "@azure/msal-node";
 import { AxiosError } from "axios";
 import { sync } from "glob";
 import { ExtensionContext } from 'vscode';
-import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME } from '../constants';
-import { AppCountryRequestProvider, AppEnvironmentHotfixRequestProvider, AppEnvironmentRequestProvider, AppPrincipalRequestProvider, AppRequestProvider, AppVersionRequestProvider, CacheProvider, CommandProvider, UserRequestProvider, ValueProvider } from '../providers';
-import { IFameApp, IFameAppCountry, IFameAppEnvironment, IFameAppEnvironmentHotifx, IFameAppPrincipal, IFameAppVersion, IGraphUser, IPrincipal } from '../types';
-import { ApiProviderHelper, ApiType, Utilities } from "../utils";
+import { CACHE_FAMEAPPS, CACHE_IDNAMEMAP, CACHE_NAME } from '../constants/index';
+import { AppCountryRequestProvider, AppEnvironmentHotfixRequestProvider, AppEnvironmentRequestProvider, AppPrincipalRequestProvider, AppRequestProvider, AppVersionRequestProvider, CacheProvider, CommandProvider, UserRequestProvider, ValueProvider } from '../providers/index';
+import { IFameApp, IFameAppCountry, IFameAppEnvironment, IFameAppEnvironmentHotifx, IFameAppPrincipal, IFameAppVersion, IGraphUser, IPrincipal } from '../types/index';
+import { ApiProviderHelper, ApiType, Utilities } from "../utils/index";
 
 export class ApiProvider {
     private cache: CacheProvider;
@@ -104,10 +105,10 @@ export class ApiProvider {
         console.log(resultArray);
         const namesMap = await ValueProvider.getMapFromCache(CACHE_IDNAMEMAP, this.cache);
         if (namesMap) {
-            resultArray.map(entry => { entry.name = (namesMap.get(entry.id) as string); return entry; });
+            resultArray.map((entry: { name: string; id: string; }) => { entry.name = (namesMap.get(entry.id) as string); return entry; });
         }
         if (filter) {
-            resultArray = resultArray.filter(element => element.name.includes(filter));
+            resultArray = resultArray.filter((element: { name: string | string[]; }) => element.name.includes(filter));
         }
         this.cache.put("v1", CACHE_FAMEAPPS, resultArray);
         return resultArray;
@@ -132,9 +133,10 @@ export class ApiProvider {
     public async getPrincipalsForApp(appId: string): Promise<IFameAppPrincipal[]> {
         let resultArray = await (await this.appPrincipalRequestProvider.list(appId)).value;
         // Add "name"-property to objects
-        resultArray = await Promise.all(resultArray.map(async (entry): Promise<IFameAppPrincipal> => {
-            entry.name = await this.getUsernameForId(entry.id) as string;
-            return entry;
+        resultArray = await Promise.all(resultArray.map(async (entry: IFameAppPrincipal | PromiseLike<IFameAppPrincipal>): Promise<IFameAppPrincipal> => {
+            const appPrincipal = await entry;
+            appPrincipal.name = await this.getUsernameForId(appPrincipal.id) as string;
+            return appPrincipal;
         }));
         console.log(resultArray);
         return resultArray;
@@ -298,7 +300,7 @@ export class ApiProvider {
             await ValueProvider.appsToIdNameMap(cachedApps, this.cache);
         }
     }
-    public async collectInformationFromVersions() {
+    public async collectInformationFromVersions(progress : vscode.Progress<{message?: string | undefined;increment?: number | undefined;}>, token: vscode.CancellationToken) {
         let cachedApps = await this.cache.get("v1", CACHE_FAMEAPPS) as IFameApp[];
         if (!cachedApps) {
             cachedApps = await this.getApps(true);
@@ -306,12 +308,21 @@ export class ApiProvider {
                 throw Error("Apps not loaded");
             }
         }
+        let totalEntries = cachedApps.filter((element) => !element.name).length;
+        let increment = 100 / totalEntries;
         let tempVersions: IFameAppVersion[] = [];
         apps:
         for (const [i, app] of cachedApps.filter((element) => !element.name).entries()) {
+            if (token.isCancellationRequested) {
+                break;
+            }
+            progress.report({ message: `(Processing app ${app.id})`, increment: increment });
             const countries = await this.getCountriesForApp(app.id);
             countries:
             for (const [i, country] of countries.entries()) {
+                if (token.isCancellationRequested) {
+                    break;
+                }
                 const appVersions = await this.getVersionsForApp(app.id, country.countryCode, false);
                 versions:
                 appVersions.reverse();

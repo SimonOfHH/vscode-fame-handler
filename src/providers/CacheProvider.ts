@@ -1,12 +1,12 @@
 // from: https://github.com/estruyf/vscode-msgraph-autocomplete/blob/main/src/providers/CacheProvider.ts
 import { ExtensionContext } from 'vscode';
-import { EXTENSION_ID, FILE_CACHE } from '../constants';
-import { Utilities } from '../utils';
+import { EXTENSION_ID, FILE_CACHE } from '../constants/index';
+import { Utilities } from '../utils/index';
 
 interface CacheObject { [version: string]: { [path: string]: any } }
 
 export class CacheProvider {
-  private readonly cacheName = `${EXTENSION_ID}`;
+  private readonly cacheName :string = `${EXTENSION_ID}`;
   private static instance: CacheProvider;
   private preCache: CacheObject | null = null;
   private cache: CacheObject = {};
@@ -78,8 +78,9 @@ export class CacheProvider {
       expiration = new Date();
       expiration.setTime(expiration.getTime() + 5 * 24 * 3600000);
     }
-
-    apiData.expiration = expiration;
+    if (apiData) {
+      apiData.expiration = expiration;
+    }
 
     if (!this.cache[version]) {
       this.cache[version] = {};

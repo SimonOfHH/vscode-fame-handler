@@ -1,7 +1,7 @@
 import { AuthenticationResult } from "@azure/msal-node";
 import * as vscode from 'vscode';
-import { CACHE_IDNAMEMAP, CACHE_TOKEND365, CACHE_TOKENGRAPH, SETTINGS } from '../constants';
-import { IFameApp, IPrincipalSets } from '../types';
+import { CACHE_IDNAMEMAP, CACHE_TOKEND365, CACHE_TOKENGRAPH, SETTINGS } from '../constants/index';
+import { IFameApp, IPrincipalSets } from '../types/index';
 import { CacheProvider } from './CacheProvider';
 import exp = require('constants');
 

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { COMMAND_NAME, EXTENSION_ID } from './constants';
-import { DetailsViewProvider, FameTreeProvider, CommandProvider } from './providers';
-import { FameAppCountrySubEntityVersionsTreeItem, FameAppEnvironmentHotfixTreeItem, FameAppEnvironmentTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppTreeItem, FameAppVersionTreeItem } from './types';
+import { COMMAND_NAME, EXTENSION_ID } from './constants/index';
+import { DetailsViewProvider, FameTreeProvider, CommandProvider } from './providers/index';
+import { FameAppCountrySubEntityVersionsTreeItem, FameAppEnvironmentHotfixTreeItem, FameAppEnvironmentTreeItem, FameAppPrincipalTreeItem, FameAppSubEntityPrincipalsTreeItem, FameAppTreeItem, FameAppVersionTreeItem } from './types/index';
 
 let tokenInfoStatusBarItem: vscode.StatusBarItem;
 
@@ -35,7 +35,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.sortAppsByNameCommand}`, () => cmdProvider.sortAppsByNameCommand()));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.sortAppsByOriginalOrderCommand}`, () => cmdProvider.sortAppsByOriginalOrderCommand()));
 	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.createDatabaseExportSasCommand}`, () => cmdProvider.createDatabaseExportSasCommand()));
-	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.selectAzureSubscription}`, () => cmdProvider.selectAzureSubscriptionCommand()));
+	context.subscriptions.push(vscode.commands.registerCommand(`${COMMAND_NAME.selectAzureSubscriptionCommand}`, () => cmdProvider.selectAzureSubscriptionCommand()));
 
 	// Register Status Bar (updates every second)
 	tokenInfoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
@@ -46,7 +46,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		await cmdProvider.statusBarUpdateCommand(tokenInfoStatusBarItem);
 	}, 1000);
 
-	console.log(`${EXTENSION_ID} active`);
+	console.log(`${EXTENSION_ID} active!`);
 }
 
 // This method is called when your extension is deactivated

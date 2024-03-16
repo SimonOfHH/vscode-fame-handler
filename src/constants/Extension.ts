@@ -37,7 +37,7 @@ export const COMMAND_NAME = {
     scheduleEnvironmentHotfixFromVersionCommand: getCommandName("scheduleEnvironmentHotfixFromVersionCommand"),
     updateEnvironmentHotfixCommand: getCommandName("updateEnvironmentHotfixCommand"),
     createDatabaseExportSasCommand: getCommandName("createDatabaseExportSasCommand"),
-    selectAzureSubscription: getCommandName("selectAzureSubscription")
+    selectAzureSubscriptionCommand: getCommandName("selectAzureSubscriptionCommand")
 };
 export const VIEWS = {
     appsView: getViewName("appsView"),

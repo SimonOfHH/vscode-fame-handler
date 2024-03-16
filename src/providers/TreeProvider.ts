@@ -43,7 +43,7 @@ export class FameTreeProvider {
         return true;
     }
     async getChildren(element?: vscode.TreeItem): Promise<vscode.TreeItem[] | undefined> {
-        if (!this.isConfigured(element)) {
+        if (!await this.isConfigured(element)) {
             return undefined;
         }
         // Current menu structure is like this:
@@ -147,7 +147,7 @@ export class FameTreeProvider {
                 break;
         }
     }
-    private async getApps(): Promise<FameAppTreeItem[]> {
+    private async getApps(): Promise<FameAppTreeItem[]> {        
         let apiResponse = await this.cmdProvider.apiProvider.getApps(false);
         let treeItems = new Array<FameAppTreeItem>;
         for (const [i, entry] of apiResponse.entries()) {

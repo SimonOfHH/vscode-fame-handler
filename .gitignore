@@ -5,3 +5,4 @@ node_modules
 *.vsix
 *.app
 testdata
+httptests.http

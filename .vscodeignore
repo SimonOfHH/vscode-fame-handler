@@ -3,13 +3,17 @@
 .vscode-test/**
 documentation/**
 testdata/**
+out/**
+node_modules/**
 src/**
 .gitignore
 .yarnrc
+webpack.config.js
 vsc-extension-quickstart.md
 **/tsconfig.json
 **/.eslintrc.json
 **/*.map
 **/*.ts
+**/.vscode-test.*
 *.app
 *.vsix

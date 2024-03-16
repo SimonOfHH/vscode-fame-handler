@@ -5,10 +5,10 @@ import { ungzip } from 'node-gzip';
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { SETTINGS } from '../constants';
+import { SETTINGS } from '../constants/index';
 import { AzureUtils } from './AzureUtils';
 import { NavxHelper } from "./NavxHelper";
-import { ApiProvider } from "../providers";
+import { ApiProvider } from "../providers/index";
 
 export class Utilities {
     public static async unzipJsonFile(filePath: string) {

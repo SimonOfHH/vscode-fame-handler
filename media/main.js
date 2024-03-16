@@ -23,18 +23,20 @@
      * @param {string[]} dataAsString
      */
     function setData(dataAsString) {
-        //const dataPlaceholder = document.getElementById('data-placeholder');
         const codePlaceholder = document.getElementById('code-placeholder');
-        //let pretty = JSON.stringify(JSON.parse(dataAsString), null, 2);
-        //let pretty = JSON.stringify(JSON.parse(dataAsString[0]), null, 2);;
         let pretty = "";
         for (const [i, entry] of Object.entries(dataAsString)) {
             if (entry) {
-                const pretty2 = JSON.stringify(JSON.parse(entry), null, 2);
-                if (pretty) {
-                    pretty = pretty.concat(",\n");
+                try {
+                    const parsedEntry = JSON.parse(entry);
+                    const pretty2 = JSON.stringify(parsedEntry, null, 2);
+                    if (pretty) {
+                        pretty = pretty.concat(",\n");
+                    }
+                    pretty = pretty.concat(pretty2);
+                } catch (error) {
+                    console.error("Invalid JSON:", error);
                 }
-                pretty = pretty.concat(pretty2);
             }
         }
         //dataPlaceholder.innerHTML = dataAsString;

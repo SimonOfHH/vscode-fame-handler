@@ -12,7 +12,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postStartCommand": "sudo apt-get update && sudo apt-get install -y libsecret-1-0",
+	"postStartCommand": "sudo apt-get update && sudo apt-get install -y libsecret-1-0 && sudo apt-get install -y inotify-tools && npm install -g @vscode/vsce",
 	// "postCreateCommand": "yarn install",
 
 	// Configure tool-specific properties.

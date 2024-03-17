@@ -241,16 +241,12 @@ export class Utilities {
         return info;
     }
     private static async selectExpiresOn() {
-        const expirationPick = await vscode.window.showQuickPick(["1 hour", "2 hours", "4 hours", "1 day", "2 days", "3 days", "1 week"], {
+        const expirationPick = await vscode.window.showQuickPick(["2 days", "3 days", "1 week"], {
             placeHolder: '...',
             title: 'Select expiration period',
             canPickMany: false
         });
         switch (expirationPick) {
-            case "1 hour": return new Date(Date.now() + (60 * 60 * 1000));
-            case "2 hours": return new Date(Date.now() + (120 * 60 * 1000));
-            case "4 hours": return new Date(Date.now() + (240 * 60 * 1000));
-            case "1 day": return new Date(Date.now() + (24 * 60 * 60 * 1000));
             case "2 days": return new Date(Date.now() + (2 * 24 * 60 * 60 * 1000));
             case "3 days": return new Date(Date.now() + (3 * 24 * 60 * 60 * 1000));
             case "1 week": return new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));

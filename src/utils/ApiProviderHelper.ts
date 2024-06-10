@@ -1,7 +1,6 @@
 import { AccountInfo, AuthenticationResult, InteractionRequiredAuthError, LogLevel, PublicClientApplication } from "@azure/msal-node";
 import axios from "axios";
 import * as vscode from 'vscode';
-import open from 'open';
 import { AUTHORITY_BASE, CACHE_TOKEND365, CACHE_TOKENGRAPH, D365_APPS_API, GRAPH_API_BASE, SCOPE_D365_APP, SCOPE_GRAPH_USERREADALL, SETTINGS } from '../constants/index';
 import { CacheProvider, ValueProvider } from "../providers/index";
 import { IPrincipal } from "../types/index";
@@ -49,8 +48,7 @@ export class ApiProviderHelper {
         return options;
     }
     public static async openBrowser(url: string) {
-        //let open = require("open");
-        open(url);
+        vscode.env.openExternal(vscode.Uri.parse(url));
     }
     public static getAuthConfig() {
         if (!Utilities.configurationExists()) {

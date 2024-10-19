@@ -45,7 +45,13 @@ export async function activate(context: vscode.ExtensionContext) {
 	setInterval(async () => {
 		await cmdProvider.statusBarUpdateCommand(tokenInfoStatusBarItem);
 	}, 1000);
-
+	// Ensure Azure Account extension is activated
+    const azureAccountExtension = vscode.extensions.getExtension('ms-vscode.azure-account');
+    if (azureAccountExtension) {
+        azureAccountExtension.activate().then(() => {
+            console.log('Azure Account extension activated ');
+        });
+    }
 	console.log(`${EXTENSION_ID} active!`);
 }
 

@@ -2,36 +2,52 @@ import * as vscode from 'vscode';
 import { ValueProvider } from '../providers';
 import { GenericResourceExpanded, ResourceManagementClient } from "@azure/arm-resources";
 import { ListContainerItem, StorageManagementClient } from "@azure/arm-storage";
-import { TokenCredential, VisualStudioCodeCredential, useIdentityPlugin } from "@azure/identity";
-import { vsCodePlugin } from "@azure/identity-vscode";
-import { SubscriptionClient,Subscription } from "@azure/arm-subscriptions";
 import { AccountSASPermissions, AccountSASResourceTypes, AccountSASServices, SASProtocol, StorageSharedKeyCredential, generateAccountSASQueryParameters } from '@azure/storage-blob';
 import { SETTINGS } from '../constants';
-
+import { TokenCredential } from "@azure/identity";
+import { Subscription } from "@azure/arm-subscriptions";
+import { AzureSubscription, VSCodeAzureSubscriptionProvider } from "@microsoft/vscode-azext-azureauth";
 export class AzureUtils {
-    private static getCredentials(): TokenCredential {
-        console.log(`Initializing Azure credentials`);
-        useIdentityPlugin(vsCodePlugin);
-        return new VisualStudioCodeCredential(); // TODO: Check if this is the right way
+    private static async getCredentials(subscriptionId: string): Promise<TokenCredential | undefined>
+    {
+        const provider = new VSCodeAzureSubscriptionProvider();
+        if (!provider) { return; }
+        if (!provider.isSignedIn()) {
+            await provider.signIn();
+        }
+        const subscriptions = await provider.getSubscriptions(true);
+        const mysubscription = subscriptions.find(sub => sub.subscriptionId === subscriptionId);
+        if (!mysubscription) { return; }
+        return mysubscription.credential;
     }
     public static async selectAzureSubscription() {
-        const subscriptionClient = new SubscriptionClient(this.getCredentials());
-        const subscriptionsResponse = subscriptionClient.subscriptions.list();
-        const subs:Subscription[] = [];
-        for await (const subscription of subscriptionsResponse) {
-            subs.push(subscription);
+        try {
+            const provider = new VSCodeAzureSubscriptionProvider();
+            if (!provider) { return; }
+            if (!provider.signIn) {
+                await provider.signIn();
+            }
+            //const tenants = await provider.getTenants();
+            const subscriptions = await provider.getSubscriptions(true);
+            const subs: AzureSubscription[] = [];
+            for await (const subscription of subscriptions) {
+                subs.push(subscription);
+            }
+            const type = await vscode.window.showQuickPick(subs.map(sub => { return new SubscriptionItem(sub); }), {
+                placeHolder: '...',
+                title: 'Select subscription ',
+                canPickMany: false
+            });
+            if (!type) { return undefined; }
+            const config = vscode.workspace.getConfiguration(SETTINGS.key);
+            config.update(SETTINGS.azureSubscriptionId, type.subscription.subscriptionId, vscode.ConfigurationTarget.Global);
+        } catch (error) {
+            const errorMessage = (error instanceof Error) ? error.message : String(error);
+            vscode.window.showErrorMessage(`Failed to select Azure subscription : ${errorMessage}`);
         }
-        const type = await vscode.window.showQuickPick(subs.map(sub => { return new SubscriptionItem(sub); }), {
-            placeHolder: '...',
-            title: 'Select subscription',
-            canPickMany: false
-        });
-        if (!type) { return undefined; }
-        const config = vscode.workspace.getConfiguration(SETTINGS.key);
-        config.update(SETTINGS.azureSubscriptionId, type.subscription.subscriptionId, vscode.ConfigurationTarget.Global);
     }
     private static getSubscription(): string | undefined {
-        console.log(`Reading Azure subscription id`);
+        console.log(`Reading Azure subscription id `);
         const id = ValueProvider.getAzureSubscriptionId();
         if (!id) {
             vscode.window.showErrorMessage(`Azure SubscriptionId needs to be set in configuration ("famehandler.azureSubscriptionId")`);
@@ -43,15 +59,17 @@ export class AzureUtils {
         }
         return id;
     }
-    private static getResourceManagementClient(): ResourceManagementClient | undefined {
+    private static async getResourceManagementClient(): Promise<ResourceManagementClient | undefined> {
         console.log(`Initializing ResourceManagementClient`);
         const subscriptionId = this.getSubscription();
         if (!subscriptionId) { return undefined; }
-        const resourceClient = new ResourceManagementClient(this.getCredentials(), subscriptionId);
+        let credentials = await this.getCredentials(subscriptionId);
+        if (!credentials) { return undefined; }
+        const resourceClient = new ResourceManagementClient(credentials, subscriptionId);
         return resourceClient;
     }
-    private static getResources(typeFilter?: string | undefined) {
-        const resourceClient = this.getResourceManagementClient();
+    private static async getResources(typeFilter?: string | undefined) {
+        const resourceClient = await this.getResourceManagementClient();
         if (!resourceClient) { return; }
         console.log(`Retrieving resources (filter: ${typeFilter})`);
         if (typeFilter) {
@@ -62,7 +80,7 @@ export class AzureUtils {
     }
     public static async getStorageAccounts(): Promise<GenericResourceExpanded[] | undefined> {
         console.log(`Retrieving storage accounts`);
-        const storageAccountsResponse = this.getResources(`resourceType eq 'Microsoft.Storage/storageAccounts'`);
+        const storageAccountsResponse = await this.getResources(`resourceType eq 'Microsoft.Storage/storageAccounts'`);
         if (!storageAccountsResponse) { return; }
         const storageAccounts = [];
         for await (const storageAccount of storageAccountsResponse) {
@@ -74,7 +92,9 @@ export class AzureUtils {
         console.log(`Retrieving storage account container`);
         const subscriptionId = this.getSubscription();
         if (!subscriptionId) { return undefined; }
-        const client = new StorageManagementClient(this.getCredentials(), subscriptionId);
+        let credentials = await this.getCredentials(subscriptionId);
+        if (!credentials) { return undefined; }
+        const client = new StorageManagementClient(credentials, subscriptionId);
         const storageAccountsResponse = client.blobContainers.list(this.getResourceGroupFromGenericResource(account as GenericResourceExpanded), account?.name as string);
         const storageAccountContainers = [];
         for await (const storageAccountContainer of storageAccountsResponse) {
@@ -86,7 +106,9 @@ export class AzureUtils {
         if (account === undefined) { return undefined; }
         const subscriptionId = this.getSubscription();
         if (!subscriptionId) { return undefined; }
-        const client = new StorageManagementClient(this.getCredentials(), subscriptionId);
+        let credentials = await this.getCredentials(subscriptionId);
+        if (!credentials) { return undefined; }
+        const client = new StorageManagementClient(credentials, subscriptionId);
         const keys = (await client.storageAccounts.listKeys(this.getResourceGroupFromGenericResource(account), account.name as string)).keys;
         if (keys === undefined) { return undefined; }
         return keys[0];
@@ -95,7 +117,9 @@ export class AzureUtils {
         if (account === undefined) { return undefined; }
         const subscriptionId = this.getSubscription();
         if (!subscriptionId) { return undefined; }
-        const client = new StorageManagementClient(this.getCredentials(), subscriptionId);
+        let credentials = await this.getCredentials(subscriptionId);
+        if (!credentials) { return undefined; }
+        const client = new StorageManagementClient(credentials, subscriptionId);
         await client.blobContainers.list(this.getResourceGroupFromGenericResource(account), account.name as string);
         const keys = (await client.storageAccounts.listKeys(this.getResourceGroupFromGenericResource(account), account.name as string)).keys;
         if (keys === undefined) { return undefined; }
@@ -144,8 +168,8 @@ class SubscriptionItem implements vscode.QuickPickItem {
     detail: string;
     subscription: Subscription;
 
-    constructor(subscriptionItem: Subscription) {
-        this.label = subscriptionItem.displayName as string;
+    constructor(subscriptionItem: AzureSubscription) {
+        this.label = subscriptionItem.name as string;
         this.detail = subscriptionItem.subscriptionId as string;
         this.subscription = subscriptionItem;
     }

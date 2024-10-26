@@ -237,7 +237,7 @@ export class Utilities {
         const storageAccountKey = await AzureUtils.getStorageAccountAccessKey(storageAccount);
         if (storageAccountKey === undefined) { return undefined; }
         const url = await AzureUtils.generateStorageSasUrl(storageAccount.name as string, storageAccountKey.value as string, expiresOn);
-        const info = `Container: ${storageAccountContainer?.name} \nURL: ${url}`;
+        const info = `File Name: : [Name]_[Tenant ID]_[Environment Name]_[Date].bacpac\nContainer: ${storageAccountContainer?.name} \nURL: ${url}`;
         return info;
     }
     private static async selectExpiresOn() {

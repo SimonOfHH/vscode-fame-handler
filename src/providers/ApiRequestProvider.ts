@@ -71,7 +71,7 @@ export class AppCountryRequestProvider extends ApiRequestProvider {
         return this.get<IFameAppCountry>(`/${appId}/countries/${id}`);
     }
     public async add(appId: string, id: string, body: {}): Promise<IFameAppCountry> {
-        return this.patchPlaceholder<IFameAppCountry>(`/${appId}/countries/${id}`, body);
+        return this.patch<IFameAppCountry>(`/${appId}/countries/${id}`, body);
     }
 }
 export class AppPrincipalRequestProvider extends ApiRequestProvider {

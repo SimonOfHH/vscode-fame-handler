@@ -4,7 +4,7 @@
   "publisher": "SimonOfHH",
   "description": "An Extension to make working with the App Management APIs for Microsofts Embed App program easier and to give it an UI (FAME repository).",
   "icon": "assets/lcs-favicon.png",
-  "version": "0.0.4",
+  "version": "0.0.7",
   "engines": {
     "vscode": "^1.86.0"
   },

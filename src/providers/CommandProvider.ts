@@ -124,7 +124,7 @@ export class CommandProvider {
         });
         if (!countryCode) { return; }
         // TODO: Should countryCode be validated? Maybe against list of assigned country codes? see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements
-        vscode.window.showWarningMessage(`Are you sure that you want to assign app "${app.appItem.name} to country "${countryCode}"? This can't be undone."`, "Yes", "No").
+        vscode.window.showWarningMessage(`Are you sure that you want to assign app "${app.appItem.id}" to country "${countryCode}"? This can't be undone."`, "Yes", "No").
             then(async (answer) => {
                 if (answer === "Yes") {
                     await this.apiProvider.addCountryForApp(app.appItem.id, countryCode);
